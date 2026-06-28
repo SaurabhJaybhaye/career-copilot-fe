@@ -24,14 +24,6 @@ export const useProfileQuery = () => {
       
       if (user && user.preferences) {
         dispatch(updateUserPreferences(user.preferences))
-        
-        // Sync theme class in document root
-        const root = window.document.documentElement
-        if (user.preferences.theme === 'dark') {
-          root.classList.add('dark')
-        } else {
-          root.classList.remove('dark')
-        }
       }
       return user
     },
@@ -42,7 +34,6 @@ interface UpdateProfilePayload {
   firstName?: string
   lastName?: string
   preferences?: {
-    theme?: 'light' | 'dark'
     notificationsEnabled?: boolean
   }
 }
@@ -67,14 +58,6 @@ export const useUpdateProfileMutation = () => {
       queryClient.setQueryData(['profile'], data)
       if (data && data.preferences) {
         dispatch(updateUserPreferences(data.preferences))
-        
-        // Sync theme class in document root
-        const root = window.document.documentElement
-        if (data.preferences.theme === 'dark') {
-          root.classList.add('dark')
-        } else {
-          root.classList.remove('dark')
-        }
       }
     },
   })

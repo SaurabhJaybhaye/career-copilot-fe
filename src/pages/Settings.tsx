@@ -12,7 +12,9 @@ export const Settings: React.FC = () => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('theme') as 'light' | 'dark') || 'light'
+  })
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
 
   // Populate local states when backend query updates
@@ -22,7 +24,6 @@ export const Settings: React.FC = () => {
       setLastName(profile.lastName || '')
       setEmail(profile.email || '')
       if (profile.preferences) {
-        setTheme(profile.preferences.theme || 'light')
         setNotificationsEnabled(profile.preferences.notificationsEnabled !== false)
       }
     }
@@ -46,27 +47,23 @@ export const Settings: React.FC = () => {
     }
   }
 
-  const toggleTheme = async () => {
+  const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light'
-    try {
-      await updateProfileMutation.mutateAsync({
-        preferences: {
-          theme: nextTheme,
-          notificationsEnabled,
-        },
-      })
-      setTheme(nextTheme)
-      toast.success(`Switched to ${nextTheme === 'dark' ? 'Dark' : 'Light'} Mode`)
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to update theme preference.')
+    const root = window.document.documentElement
+    if (nextTheme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
     }
+    localStorage.setItem('theme', nextTheme)
+    setTheme(nextTheme)
+    toast.success(`Switched to ${nextTheme === 'dark' ? 'Dark' : 'Light'} Mode`)
   }
 
   const handleSaveNotifications = async () => {
     try {
       await updateProfileMutation.mutateAsync({
         preferences: {
-          theme,
           notificationsEnabled,
         },
       })
