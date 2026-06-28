@@ -1,0 +1,53 @@
+export const API_ENDPOINTS = {
+  AUTH: {
+    REGISTER: '/auth/register',
+    LOGIN: '/auth/login',
+    LOGOUT: '/auth/logout',
+    REFRESH: '/auth/refresh',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
+  },
+  PROFILE: {
+    GET: '/profile',
+    UPDATE: '/profile',
+    THEME: '/profile/theme',
+    NOTIFICATIONS: '/profile/notifications',
+  },
+  RESUMES: {
+    LIST: '/resumes',
+    UPLOAD: '/resumes',
+    DETAILS: (id: string) => `/resumes/${id}`,
+    DELETE: (id: string) => `/resumes/${id}`,
+    KEYWORDS: (id: string) => `/resumes/${id}/keywords`,
+  },
+  JOBS: {
+    LIST: '/jobs',
+    CREATE: '/jobs',
+    DETAILS: (id: string) => `/jobs/${id}`,
+    UPDATE: (id: string) => `/jobs/${id}`,
+    DELETE: (id: string) => `/jobs/${id}`,
+    MATCH: (id: string) => `/jobs/${id}/match`,
+  },
+  APPLICATIONS: {
+    LIST: '/applications',
+    CREATE: '/applications',
+    DETAILS: (id: string) => `/applications/${id}`,
+    UPDATE: (id: string) => `/applications/${id}`,
+    DELETE: (id: string) => `/applications/${id}`,
+    KANBAN: '/applications/kanban',
+    UPDATE_STATUS: (id: string) => `/applications/${id}/status`,
+  },
+  REFERRALS: {
+    LIST: '/referrals',
+    CREATE: '/referrals',
+    DETAILS: (id: string) => `/referrals/${id}`,
+    UPDATE: (id: string) => `/referrals/${id}`,
+    DELETE: (id: string) => `/referrals/${id}`,
+    TEMPLATE: (id: string) => `/referrals/${id}/template`,
+  },
+  ANALYTICS: {
+    SUMMARY: '/analytics/summary',
+    CONVERSIONS: '/analytics/conversions',
+    SOURCES: '/analytics/sources',
+  },
+} as const
