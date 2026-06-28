@@ -1,10 +1,11 @@
 import React from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
+import { useAppSelector } from '../hooks/store'
 
 export const AuthLayout: React.FC = () => {
-  const token = localStorage.getItem('token')
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
   
-  if (token) {
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />
   }
 

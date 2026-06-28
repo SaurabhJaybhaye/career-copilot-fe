@@ -14,14 +14,17 @@ import {
   User
 } from 'lucide-react'
 
+import { useAppDispatch } from '@/hooks/store'
+import { clearCredentials } from '@/features/auth/authSlice'
+
 export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
+    dispatch(clearCredentials())
     navigate('/login')
   }
 
