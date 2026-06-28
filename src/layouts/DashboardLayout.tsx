@@ -36,9 +36,9 @@ export const DashboardLayout: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex transition-colors duration-200">
+    <div className="h-screen bg-slate-50 dark:bg-slate-900 flex overflow-hidden transition-colors duration-200">
       {/* Sidebar for Desktop */}
-      <aside className="hidden md:flex md:w-64 flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700">
+      <aside className="hidden md:flex md:w-64 flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 overflow-y-auto">
         <div className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-700">
           <span className="text-xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 bg-clip-text text-transparent">
             Career Copilot
@@ -84,7 +84,7 @@ export const DashboardLayout: React.FC = () => {
       )}
 
       {/* Mobile Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col overflow-y-auto transform transition-transform duration-300 ease-in-out md:hidden ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-700">
