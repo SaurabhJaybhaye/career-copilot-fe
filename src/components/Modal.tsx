@@ -20,7 +20,6 @@ export const Modal: React.FC<ModalProps> = ({
   variant = 'default',
   closable = true,
 }) => {
-  // Prevent background scrolling when open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -32,7 +31,6 @@ export const Modal: React.FC<ModalProps> = ({
     }
   }, [isOpen])
 
-  // Close on Escape key press
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && closable) {
@@ -47,7 +45,6 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null
 
-  // Icon mapping based on variants
   const variantIcons = {
     default: <HelpCircle className="h-6 w-6 text-violet-500" />,
     danger: <AlertTriangle className="h-6 w-6 text-red-500" />,
@@ -64,16 +61,14 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop overlay */}
       <div
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in-0"
         onClick={() => closable && onClose()}
       />
 
-      {/* Modal Dialog Body */}
       <div className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden transform transition-all duration-300 animate-in fade-in-50 zoom-in-95 flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className={`px-6 py-4 flex items-center justify-between border-b ${variantBorders[variant]} bg-slate-50/50 dark:bg-slate-850/20`}>
+        <div className={`px-6 py-4 flex items-center justify-between border-b ${variantBorders[variant]} bg-slate-50/50 dark:bg-slate-900/20`}>
           <div className="flex items-center space-x-3">
             <div className="flex-shrink-0">{variantIcons[variant]}</div>
             <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-6">

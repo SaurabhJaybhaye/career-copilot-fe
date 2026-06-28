@@ -122,12 +122,12 @@ export function DataTable<T extends Record<string, any>>({
 
     if (sortConfig?.key === key) {
       return sortConfig.direction === 'asc' ? (
-        <ArrowUp className="ml-1.5 h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+        <ArrowUp className="ml-1.5 h-3.5 w-3.5 text-violet-650 dark:text-violet-400" />
       ) : (
-        <ArrowDown className="ml-1.5 h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+        <ArrowDown className="ml-1.5 h-3.5 w-3.5 text-violet-655 dark:text-violet-400" />
       )
     }
-    return <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-slate-400 group-hover:text-slate-650" />
+    return <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-slate-400 group-hover:text-slate-600" />
   }
 
   return (
@@ -144,7 +144,7 @@ export function DataTable<T extends Record<string, any>>({
             placeholder={searchPlaceholder}
             value={searchQuery}
             onChange={handleSearchChange}
-            className="pl-11 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm w-full bg-slate-50 dark:bg-slate-750 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
+            className="pl-11 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition"
           />
         </div>
 
@@ -163,7 +163,7 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Responsive Table Wrapper */}
-      <div className="overflow-x-auto rounded-2xl border border-slate-205 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700 text-left">
           <thead className="bg-slate-50 dark:bg-slate-900/60 select-none">
             <tr>
@@ -177,8 +177,8 @@ export function DataTable<T extends Record<string, any>>({
                     key={index}
                     scope="col"
                     onClick={() => isSortable && requestSort(sortKey)}
-                    className={`px-6 py-4.5 text-xs font-bold text-slate-655 dark:text-slate-400 uppercase tracking-wider ${
-                      isSortable ? 'cursor-pointer group hover:bg-slate-100 dark:hover:bg-slate-850/40 transition' : ''
+                    className={`px-6 py-4.5 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider ${
+                      isSortable ? 'cursor-pointer group hover:bg-slate-100 dark:hover:bg-slate-700/40 transition' : ''
                     }`}
                   >
                     <div className="flex items-center">
@@ -193,7 +193,7 @@ export function DataTable<T extends Record<string, any>>({
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800 text-sm">
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-12 text-center text-slate-450 dark:text-slate-500">
+                <td colSpan={columns.length} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                   No records found.
                 </td>
               </tr>
@@ -201,7 +201,7 @@ export function DataTable<T extends Record<string, any>>({
               paginatedData.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-750/30 transition-colors duration-150"
+                  className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors duration-150"
                 >
                   {columns.map((column, colIndex) => {
                     const cellContent =
@@ -225,7 +225,7 @@ export function DataTable<T extends Record<string, any>>({
       {/* Pagination Footer */}
       {sortedData.length > pageSize && (
         <div className="flex items-center justify-between px-2 py-1 select-none">
-          <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-450">
+          <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Showing{' '}
             <span className="font-semibold text-slate-800 dark:text-slate-200">
               {Math.min((currentPage - 1) * pageSize + 1, sortedData.length)}
