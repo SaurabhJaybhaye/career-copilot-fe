@@ -66,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={() => closable && onClose()}
       />
 
-      <div className="relative z-10 isolate bg-white dark:bg-slate-800 w-full max-w-lg shadow-2xl border-l border-slate-200 dark:border-slate-700 flex flex-col h-full transform transition-transform duration-300 animate-in slide-in-from-right">
+      <div className="relative z-10 isolate bg-white dark:bg-slate-800 w-full md:w-[40%] md:min-w-[450px] shadow-2xl border-l border-slate-200 dark:border-slate-700 flex flex-col h-full transform transition-transform duration-300 animate-in slide-in-from-right">
         {/* Header */}
         <div className={`px-6 py-4 flex items-center justify-between border-b ${variantBorders[variant]} bg-slate-50/50 dark:bg-slate-900/20`}>
           <div className="flex items-start space-x-3 flex-1 min-w-0 mr-4">
