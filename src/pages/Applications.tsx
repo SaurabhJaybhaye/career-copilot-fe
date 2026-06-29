@@ -50,6 +50,26 @@ export const Applications: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null)
 
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterResumeId, setFilterResumeId] = useState('')
+
+  const filteredApplications = applications.filter((app) => {
+    const job = app.jobId
+    const resume = app.resumeId
+
+    const matchesSearch =
+      searchQuery.trim() === '' ||
+      job?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job?.company?.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesResume =
+      filterResumeId === '' ||
+      (resume && (resume._id || resume.id) === filterResumeId)
+
+    return matchesSearch && matchesResume
+  })
+
   // Add Application Form fields
   const [jobId, setJobId] = useState('')
   const [resumeId, setResumeId] = useState('')
@@ -256,11 +276,35 @@ export const Applications: React.FC = () => {
           </Button>
         </div>
       ) : (
-        /* Kanban Board Columns Container */
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 overflow-x-auto pb-6 select-none">
-          {STATUS_COLUMNS.map((col) => {
-            const colApps = applications.filter(a => a.status === col.key)
-            const isHovered = activeOverCol === col.key
+        <div className="space-y-6">
+          {/* Filters Bar */}
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex-1 w-full max-w-sm">
+              <Input 
+                placeholder="Search company or role title..." 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full text-xs font-semibold"
+              />
+            </div>
+            <div className="w-full sm:w-64">
+              <Select
+                value={filterResumeId}
+                onChange={(e) => setFilterResumeId(e.target.value)}
+                options={[
+                  { value: '', label: 'All Linked Resumes' },
+                  ...resumes.map(r => ({ value: r._id || r.id || '', label: r.title }))
+                ]}
+                className="text-xs font-semibold"
+              />
+            </div>
+          </div>
+
+          {/* Kanban Board Columns Container */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 overflow-x-auto pb-6 select-none">
+            {STATUS_COLUMNS.map((col) => {
+              const colApps = filteredApplications.filter(a => a.status === col.key)
+              const isHovered = activeOverCol === col.key
 
             return (
               <div 
@@ -340,7 +384,8 @@ export const Applications: React.FC = () => {
                 </div>
               </div>
             )
-          })}
+            })}
+          </div>
         </div>
       )}
 
