@@ -53,10 +53,13 @@ export const Applications: React.FC = () => {
   // Filter states
   const [searchQuery, setSearchQuery] = useState('')
   const [filterResumeId, setFilterResumeId] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
   const filteredApplications = applications.filter((app) => {
     const job = app.jobId
     const resume = app.resumeId
+    const appTime = new Date(app.appliedAt).getTime()
 
     const matchesSearch =
       searchQuery.trim() === '' ||
@@ -67,7 +70,13 @@ export const Applications: React.FC = () => {
       filterResumeId === '' ||
       (resume && (resume._id || resume.id) === filterResumeId)
 
-    return matchesSearch && matchesResume
+    const matchesStartDate =
+      !startDate || appTime >= new Date(startDate + 'T00:00:00').getTime()
+
+    const matchesEndDate =
+      !endDate || appTime <= new Date(endDate + 'T23:59:59').getTime()
+
+    return matchesSearch && matchesResume && matchesStartDate && matchesEndDate
   })
 
   // Add Application Form fields
@@ -278,7 +287,7 @@ export const Applications: React.FC = () => {
       ) : (
         <div className="space-y-6">
           {/* Filters Bar */}
-          <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div className="flex-1 w-full max-w-sm">
               <Input 
                 placeholder="Search company or role title..." 
@@ -287,16 +296,53 @@ export const Applications: React.FC = () => {
                 className="w-full text-xs font-semibold"
               />
             </div>
-            <div className="w-full sm:w-64">
-              <Select
-                value={filterResumeId}
-                onChange={(e) => setFilterResumeId(e.target.value)}
-                options={[
-                  { value: '', label: 'All Linked Resumes' },
-                  ...resumes.map(r => ({ value: r._id || r.id || '', label: r.title }))
-                ]}
-                className="text-xs font-semibold"
-              />
+            
+            <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-4 items-center flex-shrink-0">
+              <div className="w-full sm:w-48">
+                <Select
+                  value={filterResumeId}
+                  onChange={(e) => setFilterResumeId(e.target.value)}
+                  options={[
+                    { value: '', label: 'All Linked Resumes' },
+                    ...resumes.map(r => ({ value: r._id || r.id || '', label: r.title }))
+                  ]}
+                  className="text-xs font-semibold"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2 w-full sm:w-auto">
+                <Input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="text-xs font-semibold w-full sm:w-36"
+                  title="Applied start date filter"
+                />
+                <span className="text-slate-400 text-xs font-bold">to</span>
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="text-xs font-semibold w-full sm:w-36"
+                  title="Applied end date filter"
+                />
+              </div>
+
+              {(searchQuery || filterResumeId || startDate || endDate) && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('')
+                    setFilterResumeId('')
+                    setStartDate('')
+                    setEndDate('')
+                  }}
+                  className="!py-1.5 !px-2.5 text-xs flex-shrink-0"
+                >
+                  Clear
+                </Button>
+              )}
             </div>
           </div>
 
