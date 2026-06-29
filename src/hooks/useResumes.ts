@@ -72,7 +72,11 @@ export const useUploadResumeMutation = () => {
         data: {
           resume: Resume
         }
-      }>(API_ENDPOINTS.RESUMES.UPLOAD, formData)
+      }>(API_ENDPOINTS.RESUMES.UPLOAD, formData, {
+        headers: {
+          'Content-Type': undefined,
+        },
+      })
 
       return response.data?.resume
     },
