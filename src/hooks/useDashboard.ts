@@ -59,7 +59,7 @@ export const useDashboardSummaryQuery = () => {
         }
       }>(API_ENDPOINTS.DASHBOARD.SUMMARY)
 
-      return response.data?.summary || (response.data as unknown as DashboardSummary)
+      return response.data?.summary
     },
   })
 }
@@ -71,10 +71,12 @@ export const useRecentActivityQuery = () => {
       const response = await api.get<{
         success: boolean
         message: string
-        data: ActivityEvent[]
+        data: {
+          activities: ActivityEvent[]
+        }
       }>(API_ENDPOINTS.DASHBOARD.RECENT_ACTIVITY)
 
-      return response.data || []
+      return response.data?.activities || []
     },
   })
 }
@@ -86,10 +88,12 @@ export const useUpcomingActionsQuery = () => {
       const response = await api.get<{
         success: boolean
         message: string
-        data: UpcomingActions
+        data: {
+          upcoming: UpcomingActions
+        }
       }>(API_ENDPOINTS.DASHBOARD.UPCOMING_ACTIONS)
 
-      return response.data || { followups: [], unreadNotificationsCount: 0 }
+      return response.data?.upcoming || { followups: [], unreadNotificationsCount: 0 }
     },
   })
 }
