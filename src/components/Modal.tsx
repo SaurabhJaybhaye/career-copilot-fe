@@ -69,9 +69,9 @@ export const Modal: React.FC<ModalProps> = ({
       <div className="relative z-10 isolate bg-white dark:bg-slate-800 w-full max-w-lg shadow-2xl border-l border-slate-200 dark:border-slate-700 flex flex-col h-full transform transition-transform duration-300 animate-in slide-in-from-right">
         {/* Header */}
         <div className={`px-6 py-4 flex items-center justify-between border-b ${variantBorders[variant]} bg-slate-50/50 dark:bg-slate-900/20`}>
-          <div className="flex items-center space-x-3 flex-1 min-w-0 mr-4">
-            <div className="flex-shrink-0">{variantIcons[variant]}</div>
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-6 truncate">
+          <div className="flex items-start space-x-3 flex-1 min-w-0 mr-4">
+            <div className="flex-shrink-0 mt-0.5">{variantIcons[variant]}</div>
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-6 whitespace-normal break-words">
               {title}
             </h3>
           </div>
