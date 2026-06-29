@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink } from 'lucide-react'
+import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
 import { Select } from '@/components/Select'
@@ -10,6 +10,7 @@ import { DataTable } from '@/components/DataTable'
 import { 
   useJobsQuery, 
   useCreateJobMutation, 
+  useUpdateJobMutation,
   useDeleteJobMutation, 
   useMatchResumesMutation, 
 } from '@/hooks/useJobs'
@@ -18,11 +19,14 @@ import type { Job, MatchResult } from '@/hooks/useJobs'
 export const Jobs: React.FC = () => {
   const { data: jobs = [], isLoading: isListLoading } = useJobsQuery()
   const createJobMutation = useCreateJobMutation()
+  const updateJobMutation = useUpdateJobMutation()
   const deleteJobMutation = useDeleteJobMutation()
   const matchResumesMutation = useMatchResumesMutation()
 
   // State controls
   const [isAddOpen, setIsAddOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editingJobId, setEditingJobId] = useState<string | null>(null)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   
   // Add Job Form fields
@@ -93,6 +97,71 @@ export const Jobs: React.FC = () => {
       setDescription('')
     } catch (err: any) {
       toast.error(err.message || 'Failed to register job.')
+    }
+  }
+
+  const closeAddModal = () => {
+    setIsAddOpen(false)
+    setTitle('')
+    setCompany('')
+    setLocation('')
+    setSalary('')
+    setUrl('')
+    setStatus('active')
+    setDescription('')
+  }
+
+  const closeEditModal = () => {
+    setIsEditOpen(false)
+    setEditingJobId(null)
+    setTitle('')
+    setCompany('')
+    setLocation('')
+    setSalary('')
+    setUrl('')
+    setStatus('active')
+    setDescription('')
+  }
+
+  const handleEditClick = (id: string) => {
+    const jobToEdit = jobs.find((j) => (j._id || j.id) === id)
+    if (jobToEdit) {
+      setEditingJobId(id)
+      setTitle(jobToEdit.title)
+      setCompany(jobToEdit.company)
+      setLocation(jobToEdit.location || '')
+      setSalary(jobToEdit.salary || '')
+      setUrl(jobToEdit.url || '')
+      setStatus(jobToEdit.status)
+      setDescription(jobToEdit.description)
+      setIsEditOpen(true)
+    }
+  }
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingJobId) return
+
+    if (!title.trim() || !company.trim() || !description.trim()) {
+      toast.error('Title, Company, and Job Description are required.')
+      return
+    }
+
+    try {
+      await updateJobMutation.mutateAsync({
+        id: editingJobId,
+        title: title.trim(),
+        company: company.trim(),
+        location: location.trim() || undefined,
+        salary: salary.trim() || undefined,
+        url: url.trim() || undefined,
+        status,
+        description: description.trim(),
+      })
+      toast.success('Job details updated successfully!')
+      closeEditModal()
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update job details.')
     }
   }
 
@@ -171,6 +240,15 @@ export const Jobs: React.FC = () => {
             title="Inspect matches"
           >
             <Eye className="h-3.5 w-3.5" /> Match Diagnostics
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => handleEditClick(row._id || row.id || '')}
+            className="p-1.5 min-h-0"
+            title="Edit job details"
+          >
+            <Edit className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="danger"
@@ -308,7 +386,7 @@ export const Jobs: React.FC = () => {
             <Button
               type="button"
               variant="default"
-              onClick={() => setIsAddOpen(false)}
+              onClick={closeAddModal}
               disabled={createJobMutation.isPending}
             >
               Cancel
@@ -319,6 +397,92 @@ export const Jobs: React.FC = () => {
               isLoading={createJobMutation.isPending}
             >
               Parse & Save Job
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Job Modal */}
+      <Modal
+        isOpen={isEditOpen}
+        onClose={closeEditModal}
+        title="Edit Job Description"
+        variant="default"
+      >
+        <form onSubmit={handleEditSubmit} className="space-y-4 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Job Role Title"
+              placeholder="e.g. Senior Frontend Engineer"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+            <Input
+              label="Company Name"
+              placeholder="e.g. Acme Corporation"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Input
+              label="Location"
+              placeholder="e.g. Remote / San Francisco, CA"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+            <Input
+              label="Salary Budget"
+              placeholder="e.g. $120k - $150k"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+            />
+            <Select
+              label="Status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as any)}
+              options={[
+                { value: 'active', label: 'Active' },
+                { value: 'draft', label: 'Draft' },
+                { value: 'archived', label: 'Archived' },
+              ]}
+            />
+          </div>
+
+          <Input
+            label="Job Posting URL"
+            placeholder="e.g. https://linkedin.com/jobs/view/..."
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+
+          <TextArea
+            label="Job Description Details"
+            placeholder="Paste the full job requirements, skills, and responsibility details here..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={6}
+            required
+          />
+
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end space-x-3">
+            <Button
+              type="button"
+              variant="default"
+              onClick={closeEditModal}
+              disabled={updateJobMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={updateJobMutation.isPending}
+            >
+              Update Job Details
             </Button>
           </div>
         </form>
