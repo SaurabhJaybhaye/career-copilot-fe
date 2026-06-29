@@ -80,7 +80,7 @@ export const PasswordInput: React.FC<InputProps> = React.forwardRef<HTMLInputEle
           </button>
         </div>
         {error && (
-          <p className="text-xs font-semibold text-red-655 dark:text-red-400">{error}</p>
+          <p className="text-xs font-semibold text-red-650 dark:text-red-400">{error}</p>
         )}
         {!error && helperText && (
           <p className="text-xs text-slate-500 dark:text-slate-405">{helperText}</p>

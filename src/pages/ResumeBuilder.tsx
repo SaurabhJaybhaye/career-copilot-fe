@@ -174,7 +174,7 @@ export const ResumeBuilder: React.FC = () => {
         {/* Left Side: Upload Panel */}
         <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm h-fit space-y-4">
           <h3 className="text-lg font-bold text-slate-950 dark:text-white flex items-center">
-            <Upload className="mr-2 h-5 w-5 text-violet-550" />
+            <Upload className="mr-2 h-5 w-5 text-violet-650" />
             Upload New Resume
           </h3>
           
@@ -228,7 +228,7 @@ export const ResumeBuilder: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
             <div className="pb-4 mb-4 border-b border-slate-100 dark:border-slate-700 text-left">
               <h3 className="text-lg font-bold text-slate-950 dark:text-white flex items-center">
-                <FileText className="mr-2 h-5 w-5 text-violet-555" />
+                <FileText className="mr-2 h-5 w-5 text-violet-650" />
                 Your Stored Resumes
               </h3>
             </div>

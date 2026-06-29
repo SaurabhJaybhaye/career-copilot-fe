@@ -124,7 +124,7 @@ export function DataTable<T extends Record<string, any>>({
       return sortConfig.direction === 'asc' ? (
         <ArrowUp className="ml-1.5 h-3.5 w-3.5 text-violet-650 dark:text-violet-400" />
       ) : (
-        <ArrowDown className="ml-1.5 h-3.5 w-3.5 text-violet-655 dark:text-violet-400" />
+        <ArrowDown className="ml-1.5 h-3.5 w-3.5 text-violet-650 dark:text-violet-400" />
       )
     }
     return <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-slate-400 group-hover:text-slate-600" />
