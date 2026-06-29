@@ -265,6 +265,52 @@ export const Jobs: React.FC = () => {
     }
   ]
 
+  const addJobFooter = (
+    <div className="flex items-center space-x-2">
+      <Button
+        type="button"
+        variant="default"
+        onClick={closeAddModal}
+        disabled={createJobMutation.isPending}
+        className="!py-1.5 !px-3 text-xs"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        form="add-job-form"
+        variant="primary"
+        isLoading={createJobMutation.isPending}
+        className="!py-1.5 !px-3 text-xs"
+      >
+        Parse & Save
+      </Button>
+    </div>
+  )
+
+  const editJobFooter = (
+    <div className="flex items-center space-x-2">
+      <Button
+        type="button"
+        variant="default"
+        onClick={closeEditModal}
+        disabled={updateJobMutation.isPending}
+        className="!py-1.5 !px-3 text-xs"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        form="edit-job-form"
+        variant="primary"
+        isLoading={updateJobMutation.isPending}
+        className="!py-1.5 !px-3 text-xs"
+      >
+        Update Job
+      </Button>
+    </div>
+  )
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-200 dark:border-slate-700 gap-4">
@@ -316,14 +362,14 @@ export const Jobs: React.FC = () => {
         )}
       </div>
 
-      {/* Add Job Modal Drawer */}
       <Modal
         isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
+        onClose={closeAddModal}
         title="Add Job Description"
+        footer={addJobFooter}
         variant="default"
       >
-        <form onSubmit={handleAddSubmit} className="space-y-4 text-left">
+        <form id="add-job-form" onSubmit={handleAddSubmit} className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Job Role Title"
@@ -381,35 +427,17 @@ export const Jobs: React.FC = () => {
             rows={6}
             required
           />
-
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end space-x-3">
-            <Button
-              type="button"
-              variant="default"
-              onClick={closeAddModal}
-              disabled={createJobMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              isLoading={createJobMutation.isPending}
-            >
-              Parse & Save Job
-            </Button>
-          </div>
         </form>
       </Modal>
 
-      {/* Edit Job Modal */}
       <Modal
         isOpen={isEditOpen}
         onClose={closeEditModal}
         title="Edit Job Description"
+        footer={editJobFooter}
         variant="default"
       >
-        <form onSubmit={handleEditSubmit} className="space-y-4 text-left">
+        <form id="edit-job-form" onSubmit={handleEditSubmit} className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Job Role Title"
@@ -467,24 +495,6 @@ export const Jobs: React.FC = () => {
             rows={6}
             required
           />
-
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end space-x-3">
-            <Button
-              type="button"
-              variant="default"
-              onClick={closeEditModal}
-              disabled={updateJobMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              isLoading={updateJobMutation.isPending}
-            >
-              Update Job Details
-            </Button>
-          </div>
         </form>
       </Modal>
 
@@ -618,12 +628,8 @@ export const Jobs: React.FC = () => {
               </div>
             </div>
 
-            {/* Modal action triggers */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-              <Button onClick={() => setSelectedJobId(null)} variant="default">
-                Close Diagnostics
-              </Button>
-            </div>
+            {/* Spacer */}
+            <div className="pt-2" />
           </div>
         ) : (
           <p className="text-slate-500 text-center text-sm py-8">Failed to calculate compatibility diagnostics.</p>

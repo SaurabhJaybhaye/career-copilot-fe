@@ -334,12 +334,8 @@ export const ResumeBuilder: React.FC = () => {
               </div>
             </div>
 
-            {/* Modal action triggers */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-              <Button onClick={() => setSelectedResumeId(null)} variant="default">
-                Close Inspector
-              </Button>
-            </div>
+            {/* Spacer */}
+            <div className="pt-2" />
           </div>
         ) : (
           <p className="text-slate-500 text-center text-sm">Failed to retrieve resume details.</p>

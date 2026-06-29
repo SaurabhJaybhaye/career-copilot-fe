@@ -60,43 +60,39 @@ export const Modal: React.FC<ModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex justify-end">
       <div
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in-0"
         onClick={() => closable && onClose()}
       />
 
-      <div className="relative z-10 isolate bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden transform transition-all duration-300 animate-in fade-in-50 zoom-in-95 flex flex-col max-h-[90vh]">
+      <div className="relative z-10 isolate bg-white dark:bg-slate-800 w-full max-w-lg shadow-2xl border-l border-slate-200 dark:border-slate-700 flex flex-col h-full transform transition-transform duration-300 animate-in slide-in-from-right">
         {/* Header */}
         <div className={`px-6 py-4 flex items-center justify-between border-b ${variantBorders[variant]} bg-slate-50/50 dark:bg-slate-900/20`}>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 flex-1 min-w-0 mr-4">
             <div className="flex-shrink-0">{variantIcons[variant]}</div>
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-6">
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-6 truncate">
               {title}
             </h3>
           </div>
-          {closable && (
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-650 dark:hover:text-slate-200 transition cursor-pointer focus:outline-none"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          )}
+          <div className="flex items-center space-x-3 flex-shrink-0">
+            {footer && <div className="flex items-center space-x-2 mr-2">{footer}</div>}
+            {closable && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-650 dark:hover:text-slate-200 transition cursor-pointer focus:outline-none"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Content */}
         <div className="px-6 py-6 flex-1 overflow-y-auto text-left text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           {children}
         </div>
-
-        {/* Footer */}
-        {footer && (
-          <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700/60 flex justify-end items-center space-x-3">
-            {footer}
-          </div>
-        )}
       </div>
     </div>
   )
