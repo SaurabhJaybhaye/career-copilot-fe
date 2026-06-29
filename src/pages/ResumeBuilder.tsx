@@ -8,7 +8,6 @@ import { Modal } from '@/components/Modal'
 import { DataTable } from '@/components/DataTable'
 import { 
   useResumesQuery, 
-  useResumeDetailsQuery, 
   useUploadResumeMutation, 
   useUpdateResumeMutation, 
   useDeleteResumeMutation,
@@ -25,8 +24,9 @@ export const ResumeBuilder: React.FC = () => {
   const [file, setFile] = useState<File | null>(null)
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null)
 
-  // Details query (enabled when selectedResumeId is set)
-  const { data: activeResume, isLoading: isDetailsLoading } = useResumeDetailsQuery(selectedResumeId)
+  // Read active resume directly from the list (which contains skills/tech/domains)
+  const activeResume = resumes.find((r) => (r._id || r.id) === selectedResumeId)
+  const isDetailsLoading = false
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

@@ -66,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={() => closable && onClose()}
       />
 
-      <div className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden transform transition-all duration-300 animate-in fade-in-50 zoom-in-95 flex flex-col max-h-[90vh]">
+      <div className="relative z-10 isolate bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden transform transition-all duration-300 animate-in fade-in-50 zoom-in-95 flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className={`px-6 py-4 flex items-center justify-between border-b ${variantBorders[variant]} bg-slate-50/50 dark:bg-slate-900/20`}>
           <div className="flex items-center space-x-3">
