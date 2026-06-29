@@ -89,7 +89,7 @@ export const ResumeBuilder: React.FC = () => {
       header: 'Resume Title',
       accessor: (row: Resume) => (
         <button
-          onClick={() => setSelectedResumeId(row.id)}
+          onClick={() => setSelectedResumeId(row._id || row.id)}
           className="text-left font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400 focus:outline-none cursor-pointer flex items-center"
         >
           <FileText className="mr-2 h-4.5 w-4.5 opacity-80" />
@@ -124,7 +124,7 @@ export const ResumeBuilder: React.FC = () => {
           <Button
             variant="default"
             size="sm"
-            onClick={() => handleMakeDefault(row.id)}
+            onClick={() => handleMakeDefault(row._id || row.id)}
             disabled={updateResumeMutation.isPending}
             className="!py-1 !px-2.5 text-xs"
           >
@@ -140,7 +140,7 @@ export const ResumeBuilder: React.FC = () => {
           <Button
             variant="default"
             size="sm"
-            onClick={() => setSelectedResumeId(row.id)}
+            onClick={() => setSelectedResumeId(row._id || row.id)}
             className="p-1.5 min-h-0"
             title="Inspect keywords"
           >
@@ -149,7 +149,7 @@ export const ResumeBuilder: React.FC = () => {
           <Button
             variant="danger"
             size="sm"
-            onClick={() => handleDelete(row.id)}
+            onClick={() => handleDelete(row._id || row.id)}
             disabled={deleteResumeMutation.isPending}
             className="p-1.5 min-h-0"
             title="Delete resume"

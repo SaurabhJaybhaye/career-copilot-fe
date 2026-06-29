@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from '@/services/endpoints'
 
 export interface Resume {
   id: string
+  _id?: string
   title: string
   fileUrl: string
   isDefault: boolean
