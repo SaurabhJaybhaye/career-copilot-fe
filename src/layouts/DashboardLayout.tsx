@@ -21,98 +21,16 @@ import { useAppDispatch } from '@/hooks/store'
 import { clearCredentials } from '@/features/auth/authSlice'
 import { 
   useNotificationsQuery, 
-  useCreateNotificationMutation,
-  useMarkAllReadMutation, 
-  useMarkReadMutation, 
   useDeleteNotificationMutation 
 } from '@/hooks/useNotifications'
-import { useUpcomingActionsQuery } from '@/hooks/useDashboard'
 
 export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
 
   const { data: notifications = [] } = useNotificationsQuery()
-  const createNotificationMutation = useCreateNotificationMutation()
-  const markAllReadMutation = useMarkAllReadMutation()
-  const markReadMutation = useMarkReadMutation()
   const deleteNotifMutation = useDeleteNotificationMutation()
 
-  const { data: upcomingActions } = useUpcomingActionsQuery()
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length
-  const processingRef = React.useRef<Set<string>>(new Set())
-
-  const handleDismissNotification = (item: any) => {
-    const id = item._id || item.id || ''
-    deleteNotifMutation.mutate(id)
-
-    // Save title in localStorage so we don't automatically regenerate it
-    if (item.title?.startsWith('Reminder: ')) {
-      try {
-        const dismissed = JSON.parse(localStorage.getItem('dismissed_reminders') || '[]')
-        if (!dismissed.includes(item.title)) {
-          dismissed.push(item.title)
-          localStorage.setItem('dismissed_reminders', JSON.stringify(dismissed))
-        }
-      } catch (err) {
-        console.error('Failed to save dismissed reminder:', err)
-      }
-    }
-  }
-
-  // Automatically scan upcoming follow-ups and generate database notifications for items due within 24h
-  React.useEffect(() => {
-    const followups = upcomingActions?.followups || []
-    if (followups.length === 0) return
-
-    const now = new Date().getTime()
-    const checkAndTriggerNotifications = async () => {
-      // Load dismissed reminders list
-      let dismissed: string[] = []
-      try {
-        dismissed = JSON.parse(localStorage.getItem('dismissed_reminders') || '[]')
-      } catch {}
-
-      for (const item of followups) {
-        const id = item.id
-        if (!id) continue
-
-        const dueDate = new Date(item.dueDate).getTime()
-        const diffMs = dueDate - now
-        const oneDayMs = 24 * 60 * 60 * 1000
-
-        // If the followup is due within the next 24 hours (or is already overdue)
-        if (diffMs <= oneDayMs) {
-          const titleToFind = `Reminder: ${item.title}`
-          
-          // Skip if user has explicitly dismissed/deleted this reminder notification
-          if (dismissed.includes(titleToFind)) continue
-
-          const exists = notifications.some(
-            (n) => n.title === titleToFind
-          )
-
-          // Prevent double post processing/race conditions
-          if (!exists && !processingRef.current.has(id)) {
-            processingRef.current.add(id)
-            try {
-              await createNotificationMutation.mutateAsync({
-                title: titleToFind,
-                message: item.description || `Follow-up reminder due at ${new Date(item.dueDate).toLocaleTimeString()}`,
-                type: 'warning'
-              })
-            } catch (err) {
-              console.error('Failed to auto-generate notification:', err)
-              processingRef.current.delete(id)
-            }
-          }
-        }
-      }
-    }
-
-    checkAndTriggerNotifications()
-  }, [upcomingActions?.followups, notifications, createNotificationMutation])
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -251,9 +169,6 @@ export const DashboardLayout: React.FC = () => {
                 title="Notifications Log"
               >
                 <Bell className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-800 animate-pulse" />
-                )}
               </button>
 
               {notifOpen && (
@@ -263,20 +178,10 @@ export const DashboardLayout: React.FC = () => {
                     onClick={() => setNotifOpen(false)}
                   />
                   <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl z-30 flex flex-col max-h-[380px] overflow-hidden transform origin-top-right animate-in fade-in slide-in-from-top-1">
-                    {/* Header */}
                     <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 border-b border-slate-150 dark:border-slate-700 flex items-center justify-between">
                       <span className="text-xs font-black text-slate-800 dark:text-slate-200">
-                        Notifications ({unreadCount})
+                        Notifications
                       </span>
-                      {unreadCount > 0 && (
-                        <button
-                          onClick={() => markAllReadMutation.mutate()}
-                          disabled={markAllReadMutation.isPending}
-                          className="text-[10px] font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400 cursor-pointer disabled:opacity-50"
-                        >
-                          Mark all read
-                        </button>
-                      )}
                     </div>
 
                     {/* Scrollable list */}
@@ -301,16 +206,9 @@ export const DashboardLayout: React.FC = () => {
                           return (
                             <div 
                               key={id}
-                              className={`p-3 text-left border-l-4 ${typeBorders[item.type] || 'border-l-slate-400'} ${
-                                item.isRead 
-                                  ? 'bg-white dark:bg-slate-800 opacity-60' 
-                                  : 'bg-violet-50/20 dark:bg-violet-950/5 hover:bg-slate-50 dark:hover:bg-slate-700/50'
-                              } transition flex items-start justify-between space-x-2`}
+                              className={`p-3 text-left border-l-4 ${typeBorders[item.type] || 'border-l-slate-400'} bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition flex items-start justify-between space-x-2`}
                             >
-                              <div 
-                                className="flex-1 min-w-0 cursor-pointer"
-                                onClick={() => !item.isRead && markReadMutation.mutate(id)}
-                              >
+                              <div className="flex-1 min-w-0">
                                 <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
                                   {item.title}
                                 </p>
@@ -323,7 +221,7 @@ export const DashboardLayout: React.FC = () => {
                                 </p>
                               </div>
                               <button
-                                onClick={() => handleDismissNotification(item)}
+                                onClick={() => deleteNotifMutation.mutate(id)}
                                 disabled={deleteNotifMutation.isPending}
                                 className="p-1 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition cursor-pointer border-none bg-transparent"
                                 title="Delete alert"
