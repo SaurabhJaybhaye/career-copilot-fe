@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { FileText, Upload, Trash2, Eye, Award, Cpu, Globe, Download, Check, Loader2 } from 'lucide-react'
+import { FileText, Upload, Trash2, Eye, Award, Cpu, Globe, Download, Check, Loader2, Sparkles } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Badge } from '@/components/Badge'
@@ -15,6 +16,7 @@ import {
 import type { Resume } from '@/hooks/useResumes'
 
 export const ResumeBuilder: React.FC = () => {
+  const navigate = useNavigate()
   const { data: resumes = [], isLoading: isListLoading } = useResumesQuery()
   const uploadResumeMutation = useUploadResumeMutation()
   const updateResumeMutation = useUpdateResumeMutation()
@@ -334,8 +336,18 @@ export const ResumeBuilder: React.FC = () => {
               </div>
             </div>
 
-            {/* Spacer */}
-            <div className="pt-2" />
+            {/* AI Action */}
+            <div className="pt-4 border-t border-slate-150 dark:border-slate-700 flex justify-end">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  navigate(`/copilot?resumeId=${selectedResumeId}`)
+                }}
+                className="flex items-center gap-1.5"
+              >
+                <Sparkles className="h-4 w-4" /> Optimize with AI
+              </Button>
+            </div>
           </div>
         ) : (
           <p className="text-slate-500 text-center text-sm">Failed to retrieve resume details.</p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit } from 'lucide-react'
+import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit, Sparkles } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
 import { Select } from '@/components/Select'
@@ -17,6 +18,7 @@ import {
 import type { Job, MatchResult } from '@/hooks/useJobs'
 
 export const Jobs: React.FC = () => {
+  const navigate = useNavigate()
   const { data: jobs = [], isLoading: isListLoading } = useJobsQuery()
   const createJobMutation = useCreateJobMutation()
   const updateJobMutation = useUpdateJobMutation()
@@ -628,11 +630,21 @@ export const Jobs: React.FC = () => {
               </div>
             </div>
 
-            {/* Spacer */}
-            <div className="pt-2" />
+            {/* AI Action */}
+            <div className="pt-4 border-t border-slate-150 dark:border-slate-700 flex justify-end">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  navigate(`/copilot?jobId=${selectedJobId}&resumeId=${selectedMatch.resumeId}`)
+                }}
+                className="flex items-center gap-1.5"
+              >
+                <Sparkles className="h-4 w-4" /> Open in AI Copilot
+              </Button>
+            </div>
           </div>
         ) : (
-          <p className="text-slate-500 text-center text-sm py-8">Failed to calculate compatibility diagnostics.</p>
+          <p className="text-slate-550 text-center text-sm py-8">Failed to calculate compatibility diagnostics.</p>
         )}
       </Modal>
     </div>

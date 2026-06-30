@@ -11,7 +11,8 @@ import {
   LogOut, 
   Menu, 
   X, 
-  User
+  User,
+  Sparkles
 } from 'lucide-react'
 
 import { useAppDispatch } from '@/hooks/store'
@@ -36,6 +37,7 @@ export const DashboardLayout: React.FC = () => {
     { path: '/applications', label: 'Applications', icon: KanbanSquare },
     { path: '/referrals', label: 'Referrals', icon: Users },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+    { path: '/copilot', label: 'AI Copilot', icon: Sparkles },
     { path: '/settings', label: 'Settings', icon: Settings },
   ]
 

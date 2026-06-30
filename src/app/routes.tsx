@@ -15,6 +15,7 @@ import { Referrals } from '@/pages/Referrals'
 import { Analytics } from '@/pages/Analytics'
 import { Settings } from '@/pages/Settings'
 import { DesignSystem } from '@/pages/DesignSystem'
+import { AICopilot } from '@/pages/AICopilot'
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
       { path: 'referrals', element: <Referrals /> },
       { path: 'analytics', element: <Analytics /> },
       { path: 'settings', element: <Settings /> },
+      { path: 'copilot', element: <AICopilot /> },
     ],
   },
   // Developer design playground

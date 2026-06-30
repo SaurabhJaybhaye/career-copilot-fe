@@ -65,4 +65,11 @@ export const API_ENDPOINTS = {
     CONVERSIONS: '/analytics/conversions',
     SOURCES: '/analytics/sources',
   },
+  AI: {
+    TAILOR_RESUME: '/ai/resume',
+    SAVE_TAILORED_RESUME: '/ai/resume/save',
+    GENERATE_COVER_LETTER: '/ai/cover-letter',
+    GENERATE_REFERRAL: '/ai/referral-message',
+    SKILL_GAP: '/ai/skill-gap',
+  },
 } as const
