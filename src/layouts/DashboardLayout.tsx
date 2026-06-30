@@ -21,21 +21,63 @@ import { useAppDispatch } from '@/hooks/store'
 import { clearCredentials } from '@/features/auth/authSlice'
 import { 
   useNotificationsQuery, 
+  useCreateNotificationMutation,
   useMarkAllReadMutation, 
   useMarkReadMutation, 
   useDeleteNotificationMutation 
 } from '@/hooks/useNotifications'
+import { useUpcomingActionsQuery } from '@/hooks/useDashboard'
 
 export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
 
   const { data: notifications = [] } = useNotificationsQuery()
+  const createNotificationMutation = useCreateNotificationMutation()
   const markAllReadMutation = useMarkAllReadMutation()
   const markReadMutation = useMarkReadMutation()
   const deleteNotifMutation = useDeleteNotificationMutation()
 
+  const { data: upcomingActions } = useUpcomingActionsQuery()
+
   const unreadCount = notifications.filter((n) => !n.isRead).length
+
+  // Automatically scan upcoming follow-ups and generate database notifications for items due within 24h
+  React.useEffect(() => {
+    const followups = upcomingActions?.followups || []
+    if (followups.length === 0) return
+
+    const now = new Date().getTime()
+    const checkAndTriggerNotifications = async () => {
+      for (const item of followups) {
+        const dueDate = new Date(item.dueDate).getTime()
+        const diffMs = dueDate - now
+        const oneDayMs = 24 * 60 * 60 * 1000
+
+        // If the followup is due within the next 24 hours (or is already overdue)
+        if (diffMs <= oneDayMs) {
+          const titleToFind = `Reminder: ${item.title}`
+          const exists = notifications.some(
+            (n) => n.title === titleToFind
+          )
+
+          if (!exists) {
+            try {
+              await createNotificationMutation.mutateAsync({
+                title: titleToFind,
+                message: item.description || `Follow-up reminder due at ${new Date(item.dueDate).toLocaleTimeString()}`,
+                type: 'warning'
+              })
+            } catch (err) {
+              console.error('Failed to auto-generate notification:', err)
+            }
+          }
+        }
+      }
+    }
+
+    checkAndTriggerNotifications()
+  }, [upcomingActions?.followups, notifications, createNotificationMutation])
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
