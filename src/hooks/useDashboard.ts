@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/services/api'
 import { API_ENDPOINTS } from '@/services/endpoints'
 
@@ -94,6 +94,77 @@ export const useUpcomingActionsQuery = () => {
       }>(API_ENDPOINTS.DASHBOARD.UPCOMING_ACTIONS)
 
       return response.data?.upcoming || { followups: [], unreadNotificationsCount: 0 }
+    },
+  })
+}
+
+interface CreateFollowUpPayload {
+  jobId?: string | null
+  title: string
+  description?: string
+  dueDate: string
+}
+
+export const useCreateFollowUpMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (payload: CreateFollowUpPayload) => {
+      const response = await api.post<{
+        success: boolean
+        message: string
+        data: {
+          followup: FollowUpItem
+        }
+      }>(API_ENDPOINTS.FOLLOWUPS.CREATE, payload)
+
+      return response.data?.followup
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
+
+interface UpdateFollowUpStatusPayload {
+  id: string
+  status: 'pending' | 'completed'
+}
+
+export const useUpdateFollowUpStatusMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, status }: UpdateFollowUpStatusPayload) => {
+      const response = await api.patch<{
+        success: boolean
+        message: string
+        data: {
+          followup: FollowUpItem
+        }
+      }>(API_ENDPOINTS.FOLLOWUPS.UPDATE_STATUS(id), { status })
+
+      return response.data?.followup
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
+
+export const useDeleteFollowUpMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete<{
+        success: boolean
+        message: string
+        data: null
+      }>(API_ENDPOINTS.FOLLOWUPS.DELETE(id))
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     },
   })
 }

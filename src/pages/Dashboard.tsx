@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { 
   FileText, 
   Briefcase, 
@@ -10,20 +11,76 @@ import {
   ChevronRight,
   Loader2,
   Clock,
-  ArrowUpRight
+  ArrowUpRight,
+  Trash2,
+  Plus
 } from 'lucide-react'
 import { 
   useDashboardSummaryQuery, 
   useRecentActivityQuery, 
-  useUpcomingActionsQuery 
+  useUpcomingActionsQuery,
+  useCreateFollowUpMutation,
+  useDeleteFollowUpMutation
 } from '@/hooks/useDashboard'
+import { useJobsQuery } from '@/hooks/useJobs'
+import { Button } from '@/components/Button'
+import { Input, TextArea } from '@/components/Input'
+import { Select } from '@/components/Select'
+import { Modal } from '@/components/Modal'
 
 export const Dashboard: React.FC = () => {
   const { data: summary, isLoading: isSummaryLoading } = useDashboardSummaryQuery()
   const { data: recentActivity = [], isLoading: isActivityLoading } = useRecentActivityQuery()
   const { data: upcomingActions, isLoading: isUpcomingLoading } = useUpcomingActionsQuery()
+  const { data: jobs = [] } = useJobsQuery()
+
+  const createFollowUpMutation = useCreateFollowUpMutation()
+  const deleteFollowUpMutation = useDeleteFollowUpMutation()
+
+  // Follow-up form states
+  const [isFollowUpOpen, setIsFollowUpOpen] = useState(false)
+  const [followUpTitle, setFollowUpTitle] = useState('')
+  const [followUpDesc, setFollowUpDesc] = useState('')
+  const [followUpDate, setFollowUpDate] = useState('')
+  const [followUpJobId, setFollowUpJobId] = useState('')
 
   const isPageLoading = isSummaryLoading || isUpcomingLoading || isActivityLoading
+
+  const handleFollowUpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!followUpTitle.trim() || !followUpDate) {
+      toast.error('Title and Due Date are required.')
+      return
+    }
+
+    try {
+      await createFollowUpMutation.mutateAsync({
+        title: followUpTitle.trim(),
+        description: followUpDesc.trim() || undefined,
+        dueDate: new Date(followUpDate).toISOString(),
+        jobId: followUpJobId || null
+      })
+      toast.success('Follow-up reminder scheduled!')
+      setIsFollowUpOpen(false)
+      // Reset form
+      setFollowUpTitle('')
+      setFollowUpDesc('')
+      setFollowUpDate('')
+      setFollowUpJobId('')
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to schedule reminder.')
+    }
+  }
+
+  const handleDeleteFollowUp = async (id: string) => {
+    if (!window.confirm('Delete this reminder?')) return
+    try {
+      await deleteFollowUpMutation.mutateAsync(id)
+      toast.success('Reminder removed.')
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete reminder.')
+    }
+  }
 
   // Map activity type to icons
   const getActivityIcon = (type: string) => {
@@ -146,9 +203,18 @@ export const Dashboard: React.FC = () => {
                 <Calendar className="mr-2 h-5 w-5 text-violet-550" />
                 Upcoming Follow-ups & Reminders
               </h3>
-              <Link to="/applications" className="text-xs font-bold text-violet-650 hover:text-violet-500 dark:text-violet-400 flex items-center">
-                View Tracker <ChevronRight className="h-4 w-4" />
-              </Link>
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={() => setIsFollowUpOpen(true)}
+                  className="text-xs font-bold text-violet-650 hover:text-violet-505 dark:text-violet-400 flex items-center bg-transparent cursor-pointer border-none"
+                >
+                  <Plus className="h-3.5 w-3.5 mr-0.5" /> Add Reminder
+                </button>
+                <span className="text-slate-300 dark:text-slate-700">|</span>
+                <Link to="/applications" className="text-xs font-bold text-violet-650 hover:text-violet-500 dark:text-violet-400 flex items-center">
+                  View Tracker <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
             </div>
             
             {followups.length === 0 ? (
@@ -160,22 +226,32 @@ export const Dashboard: React.FC = () => {
               <div className="mt-4 divide-y divide-slate-100 dark:divide-slate-700">
                 {followups.slice(0, 5).map((item) => (
                   <div key={item.id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <h4 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
+                    <div className="space-y-1 text-left flex-1 min-w-0">
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">
                         {item.job?.company || 'General'} &bull;{' '}
-                        <span className="text-slate-500 dark:text-slate-400 font-normal">
+                        <span className="text-slate-550 dark:text-slate-400 font-normal">
                           {item.job?.title || item.title}
                         </span>
                       </h4>
-                      <p className="text-xs text-slate-400">{item.description || 'Follow-up Task'}</p>
+                      <p className="text-xs text-slate-450 truncate">{item.description || 'Follow-up Task'}</p>
                     </div>
-                    <span className="text-xs sm:text-sm font-bold bg-violet-50 dark:bg-violet-950/40 text-violet-650 dark:text-violet-400 px-3.5 py-1.5 rounded-full whitespace-nowrap">
-                      {new Date(item.dueDate).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs sm:text-sm font-bold bg-violet-50 dark:bg-violet-950/40 text-violet-650 dark:text-violet-400 px-3.5 py-1.5 rounded-full whitespace-nowrap">
+                        {new Date(item.dueDate).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteFollowUp(item.id)}
+                        disabled={deleteFollowUpMutation.isPending}
+                        className="p-1.5 rounded-lg text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-750 hover:text-red-500 transition cursor-pointer border-none bg-transparent"
+                        title="Delete reminder"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -300,6 +376,73 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Schedule FollowUp Modal */}
+      <Modal
+        isOpen={isFollowUpOpen}
+        onClose={() => setIsFollowUpOpen(false)}
+        title="Schedule Follow-up Reminder"
+        footer={
+          <div className="flex items-center space-x-2">
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => setIsFollowUpOpen(false)}
+              disabled={createFollowUpMutation.isPending}
+              className="!py-1.5 !px-3 text-xs"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="add-followup-form"
+              variant="primary"
+              isLoading={createFollowUpMutation.isPending}
+              className="!py-1.5 !px-3 text-xs"
+            >
+              Add Reminder
+            </Button>
+          </div>
+        }
+        variant="default"
+      >
+        <form id="add-followup-form" onSubmit={handleFollowUpSubmit} className="space-y-4 text-left">
+          <Input
+            label="Reminder Title"
+            placeholder="e.g. Call HR for screening updates"
+            value={followUpTitle}
+            onChange={(e) => setFollowUpTitle(e.target.value)}
+            required
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Due Date & Time"
+              type="datetime-local"
+              value={followUpDate}
+              onChange={(e) => setFollowUpDate(e.target.value)}
+              required
+            />
+            <Select
+              label="Link Target Job (Optional)"
+              value={followUpJobId}
+              onChange={(e) => setFollowUpJobId(e.target.value)}
+              options={[
+                { value: '', label: '-- General Follow-up --' },
+                ...jobs.map(j => ({ value: j._id || j.id || '', label: `${j.title} (${j.company})` }))
+              ]}
+            />
+          </div>
+
+          <TextArea
+            label="Description / Notes"
+            placeholder="e.g. Ask for timeline feedback, review prep docs, check referrers."
+            value={followUpDesc}
+            onChange={(e) => setFollowUpDesc(e.target.value)}
+            rows={4}
+          />
+        </form>
+      </Modal>
     </div>
   )
 }
