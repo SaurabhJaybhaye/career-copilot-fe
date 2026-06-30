@@ -41,6 +41,25 @@ export const DashboardLayout: React.FC = () => {
   const { data: upcomingActions } = useUpcomingActionsQuery()
 
   const unreadCount = notifications.filter((n) => !n.isRead).length
+  const processingRef = React.useRef<Set<string>>(new Set())
+
+  const handleDismissNotification = (item: any) => {
+    const id = item._id || item.id || ''
+    deleteNotifMutation.mutate(id)
+
+    // Save title in localStorage so we don't automatically regenerate it
+    if (item.title?.startsWith('Reminder: ')) {
+      try {
+        const dismissed = JSON.parse(localStorage.getItem('dismissed_reminders') || '[]')
+        if (!dismissed.includes(item.title)) {
+          dismissed.push(item.title)
+          localStorage.setItem('dismissed_reminders', JSON.stringify(dismissed))
+        }
+      } catch (err) {
+        console.error('Failed to save dismissed reminder:', err)
+      }
+    }
+  }
 
   // Automatically scan upcoming follow-ups and generate database notifications for items due within 24h
   React.useEffect(() => {
@@ -49,7 +68,16 @@ export const DashboardLayout: React.FC = () => {
 
     const now = new Date().getTime()
     const checkAndTriggerNotifications = async () => {
+      // Load dismissed reminders list
+      let dismissed: string[] = []
+      try {
+        dismissed = JSON.parse(localStorage.getItem('dismissed_reminders') || '[]')
+      } catch {}
+
       for (const item of followups) {
+        const id = item.id
+        if (!id) continue
+
         const dueDate = new Date(item.dueDate).getTime()
         const diffMs = dueDate - now
         const oneDayMs = 24 * 60 * 60 * 1000
@@ -57,11 +85,17 @@ export const DashboardLayout: React.FC = () => {
         // If the followup is due within the next 24 hours (or is already overdue)
         if (diffMs <= oneDayMs) {
           const titleToFind = `Reminder: ${item.title}`
+          
+          // Skip if user has explicitly dismissed/deleted this reminder notification
+          if (dismissed.includes(titleToFind)) continue
+
           const exists = notifications.some(
             (n) => n.title === titleToFind
           )
 
-          if (!exists) {
+          // Prevent double post processing/race conditions
+          if (!exists && !processingRef.current.has(id)) {
+            processingRef.current.add(id)
             try {
               await createNotificationMutation.mutateAsync({
                 title: titleToFind,
@@ -70,6 +104,7 @@ export const DashboardLayout: React.FC = () => {
               })
             } catch (err) {
               console.error('Failed to auto-generate notification:', err)
+              processingRef.current.delete(id)
             }
           }
         }
@@ -288,7 +323,7 @@ export const DashboardLayout: React.FC = () => {
                                 </p>
                               </div>
                               <button
-                                onClick={() => deleteNotifMutation.mutate(id)}
+                                onClick={() => handleDismissNotification(item)}
                                 disabled={deleteNotifMutation.isPending}
                                 className="p-1 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition cursor-pointer border-none bg-transparent"
                                 title="Delete alert"
