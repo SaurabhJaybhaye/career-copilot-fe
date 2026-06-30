@@ -8,17 +8,34 @@ import {
   Users, 
   BarChart3, 
   Settings, 
-  LogOut,
-  Menu,
-  X,
-  User
+  LogOut, 
+  Menu, 
+  X, 
+  User,
+  Bell,
+  Clock,
+  Trash2
 } from 'lucide-react'
 
 import { useAppDispatch } from '@/hooks/store'
 import { clearCredentials } from '@/features/auth/authSlice'
+import { 
+  useNotificationsQuery, 
+  useMarkAllReadMutation, 
+  useMarkReadMutation, 
+  useDeleteNotificationMutation 
+} from '@/hooks/useNotifications'
 
 export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [notifOpen, setNotifOpen] = useState(false)
+
+  const { data: notifications = [] } = useNotificationsQuery()
+  const markAllReadMutation = useMarkAllReadMutation()
+  const markReadMutation = useMarkReadMutation()
+  const deleteNotifMutation = useDeleteNotificationMutation()
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -149,6 +166,103 @@ export const DashboardLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Notification Bell Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                className="relative p-1.5 rounded-lg text-slate-600 dark:text-slate-355 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer focus:outline-none"
+                title="Notifications Log"
+              >
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-800 animate-pulse" />
+                )}
+              </button>
+
+              {notifOpen && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-20"
+                    onClick={() => setNotifOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl z-30 flex flex-col max-h-[380px] overflow-hidden transform origin-top-right animate-in fade-in slide-in-from-top-1">
+                    {/* Header */}
+                    <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/40 border-b border-slate-150 dark:border-slate-700 flex items-center justify-between">
+                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">
+                        Notifications ({unreadCount})
+                      </span>
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={() => markAllReadMutation.mutate()}
+                          disabled={markAllReadMutation.isPending}
+                          className="text-[10px] font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400 cursor-pointer disabled:opacity-50"
+                        >
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Scrollable list */}
+                    <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/60 max-h-[280px]">
+                      {notifications.length === 0 ? (
+                        <div className="py-10 text-center text-slate-400 dark:text-slate-500 text-xs">
+                          No notifications yet.
+                        </div>
+                      ) : (
+                        notifications.map((item) => {
+                          const id = item._id || item.id || ''
+                          
+                          // Border colors based on types
+                          const typeBorders = {
+                            info: 'border-l-blue-500',
+                            success: 'border-l-emerald-500',
+                            warning: 'border-l-amber-500',
+                            reminder: 'border-l-amber-500',
+                            error: 'border-l-red-500'
+                          }
+
+                          return (
+                            <div 
+                              key={id}
+                              className={`p-3 text-left border-l-4 ${typeBorders[item.type] || 'border-l-slate-400'} ${
+                                item.isRead 
+                                  ? 'bg-white dark:bg-slate-800 opacity-60' 
+                                  : 'bg-violet-50/20 dark:bg-violet-950/5 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                              } transition flex items-start justify-between space-x-2`}
+                            >
+                              <div 
+                                className="flex-1 min-w-0 cursor-pointer"
+                                onClick={() => !item.isRead && markReadMutation.mutate(id)}
+                              >
+                                <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
+                                  {item.title}
+                                </p>
+                                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight break-words">
+                                  {item.message}
+                                </p>
+                                <p className="text-[9px] text-slate-400 mt-1 flex items-center">
+                                  <Clock className="h-3 w-3 mr-0.5" />
+                                  {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => deleteNotifMutation.mutate(id)}
+                                disabled={deleteNotifMutation.isPending}
+                                className="p-1 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition cursor-pointer border-none bg-transparent"
+                                title="Delete alert"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
             <Link 
               to="/settings"
               className="flex items-center space-x-2 p-1.5 rounded-lg text-slate-600 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
