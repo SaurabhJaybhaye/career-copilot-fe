@@ -62,7 +62,7 @@ export const useTailorResumeMutation = () => {
         success: boolean
         message: string
         data: TailorResumeResponseData
-      }>(API_ENDPOINTS.AI.TAILOR_RESUME, payload)
+      }>(API_ENDPOINTS.AI.TAILOR_RESUME, payload, { timeout: 100000 })
       return response.data
     },
   })
@@ -82,7 +82,7 @@ export const useSaveTailoredResumeMutation = () => {
         data: {
           resume: Resume
         }
-      }>(API_ENDPOINTS.AI.SAVE_TAILORED_RESUME, payload)
+      }>(API_ENDPOINTS.AI.SAVE_TAILORED_RESUME, payload, { timeout: 100000 })
       return response.data.resume
     },
     onSuccess: () => {
@@ -105,7 +105,7 @@ export const useGenerateCoverLetterMutation = () => {
         data: {
           coverLetter: string
         }
-      }>(API_ENDPOINTS.AI.GENERATE_COVER_LETTER, payload)
+      }>(API_ENDPOINTS.AI.GENERATE_COVER_LETTER, payload, { timeout: 100000 })
       return response.data.coverLetter
     },
   })
@@ -123,7 +123,7 @@ export const useGenerateReferralMutation = () => {
         data: {
           message: string
         }
-      }>(API_ENDPOINTS.AI.GENERATE_REFERRAL, payload)
+      }>(API_ENDPOINTS.AI.GENERATE_REFERRAL, payload, { timeout: 100000 })
       return response.data.message
     },
   })
@@ -142,7 +142,7 @@ export const useSkillGapQuery = (resumeId: string | null, jobId: string | null) 
         success: boolean
         message: string
         data: SkillGapResponseData
-      }>(API_ENDPOINTS.AI.SKILL_GAP, { resumeId, jobId })
+      }>(API_ENDPOINTS.AI.SKILL_GAP, { resumeId, jobId }, { timeout: 100000 })
       return response.data
     },
     enabled: !!resumeId && !!jobId,

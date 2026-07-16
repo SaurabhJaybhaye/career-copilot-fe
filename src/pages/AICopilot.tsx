@@ -15,7 +15,8 @@ import {
   Linkedin,
   Mail,
   MessageSquare,
-  BookOpen
+  BookOpen,
+  Globe
 } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
@@ -629,7 +630,7 @@ export const AICopilot: React.FC = () => {
                         />
                         
                         {/* Extracted Metadata Preview */}
-                        {(tailoredSkills.length > 0 || tailoredTech.length > 0) && (
+                        {(tailoredSkills.length > 0 || tailoredTech.length > 0 || tailoredDomains.length > 0) && (
                           <div className="p-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-700 text-xs space-y-2">
                             <span className="font-extrabold text-slate-700 dark:text-slate-300">Parsed Tags to Register:</span>
                             {tailoredSkills.length > 0 && (
@@ -642,6 +643,12 @@ export const AICopilot: React.FC = () => {
                               <div className="flex flex-wrap items-center gap-1 mt-1">
                                 <span className="font-semibold text-slate-450 mr-1">Tech:</span>
                                 {tailoredTech.map((t, idx) => <Badge key={idx} variant="interview" className="text-[10px]">{t}</Badge>)}
+                              </div>
+                            )}
+                            {tailoredDomains.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1 mt-1">
+                                <span className="font-semibold text-slate-450 mr-1">Domains:</span>
+                                {tailoredDomains.map((d, idx) => <Badge key={idx} variant="applied" className="text-[10px]">{d}</Badge>)}
                               </div>
                             )}
                           </div>
@@ -855,7 +862,7 @@ export const AICopilot: React.FC = () => {
             disabled={saveTailoredResumeMutation.isPending}
           />
           <p className="text-slate-450 text-[11px]">
-            Saving will register this tailored CV as a new entry in your **Resume Manager**. The parsed skills and technologies identified by the AI will be associated with the new document.
+            Saving will register this tailored CV as a new entry in your **Resume Manager**. The parsed skills, technologies, and industry domains identified by the AI will be associated with the new document.
           </p>
         </form>
       </Modal>

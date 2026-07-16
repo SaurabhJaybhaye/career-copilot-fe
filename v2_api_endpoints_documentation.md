@@ -47,7 +47,7 @@ Generates tailored resume text based on an existing resume and a target job desc
 ---
 
 ### B. Save Tailored Resume (`POST /ai/resume/save`)
-Saves a generated tailored resume text to the local disk and registers it as a new resume record.
+Saves a generated tailored resume text to the local disk and registers it as a new resume record. Under the hood, the Markdown text is compiled to semantic HTML, injected into a premium print-optimized HTML/CSS resume template (using Inter typography, clean grids, and section rules), and rendered to a pixel-perfect PDF via headless Puppeteer.
 
 #### Request Body
 ```json
@@ -72,9 +72,9 @@ Saves a generated tailored resume text to the local disk and registers it as a n
       "id": "607f1f77bcf86cd799439099",
       "userId": "607f1f77bcf86cd799439011",
       "title": "Tailored Resume - AWS Role at Acme Corp",
-      "fileUrl": "/uploads/resumes/tailored-1782831222828-607f1f77bcf86cd799439012.md",
-      "filePath": "D:\\CareerCopilot\\career-copilot-be\\uploads\\resumes\\tailored-1782831222828-607f1f77bcf86cd799439012.md",
-      "fileType": "md",
+      "fileUrl": "/uploads/resumes/tailored-1782831222828-607f1f77bcf86cd799439012.pdf",
+      "filePath": "D:\\CareerCopilot\\career-copilot-be\\uploads\\resumes\\tailored-1782831222828-607f1f77bcf86cd799439012.pdf",
+      "fileType": "pdf",
       "fileSize": 1420,
       "isDefault": false,
       "skills": ["Cloud Architecture", "Leadership", "Agile"],
