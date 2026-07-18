@@ -114,7 +114,119 @@ Generates a personalized, professional cover letter matching a specific job desc
 
 ---
 
-### D. Generate Referral Message (`POST /ai/referral-message`)
+### D. Save Cover Letter (`POST /ai/cover-letter/save`)
+Saves a generated cover letter to the local disk and database. The Markdown content is compiled to HTML, injected into a formal letterhead PDF template, rendered via Puppeteer, and saved.
+
+#### Request URL
+`POST /api/v1/ai/cover-letter/save`
+
+#### Request Body
+```json
+{
+  "resumeId": "607f1f77bcf86cd799439012",
+  "jobId": "607f1f77bcf86cd799439010",
+  "content": "Dear Hiring Manager,\n\nI am writing to express my strong interest in...",
+  "title": "Cover Letter - AWS Developer at Acme Corp" // Optional
+}
+```
+
+#### Success Response (201 Created)
+```json
+{
+  "success": true,
+  "message": "Cover letter saved successfully",
+  "data": {
+    "coverLetter": {
+      "id": "607f1f77bcf86cd799439088",
+      "userId": "607f1f77bcf86cd799439011",
+      "jobId": "607f1f77bcf86cd799439010",
+      "title": "Cover Letter - AWS Developer at Acme Corp",
+      "fileUrl": "/uploads/cover-letters/coverletter-1782831222828.pdf",
+      "filePath": "D:\\CareerCopilot\\career-copilot-be\\uploads\\cover-letters\\coverletter-1782831222828.pdf",
+      "content": "Dear Hiring Manager,\n\nI am writing to express my strong interest in...",
+      "createdAt": "2026-06-30T20:34:28.000Z",
+      "updatedAt": "2026-06-30T20:34:28.000Z"
+    }
+  }
+}
+```
+
+---
+
+### E. List Saved Cover Letters (`GET /cover-letters`)
+Retrieves all cover letters saved by the currently authenticated user.
+
+#### Request URL
+`GET /api/v1/cover-letters`
+
+#### Success Response (200 OK)
+```json
+{
+  "success": true,
+  "message": "Cover letters retrieved successfully",
+  "data": {
+    "coverLetters": [
+      {
+        "id": "607f1f77bcf86cd799439088",
+        "userId": "607f1f77bcf86cd799439011",
+        "jobId": "607f1f77bcf86cd799439010",
+        "title": "Cover Letter - AWS Developer at Acme Corp",
+        "fileUrl": "/uploads/cover-letters/coverletter-1782831222828.pdf",
+        "createdAt": "2026-06-30T20:34:28.000Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### F. Get Cover Letter Details (`GET /cover-letters/:id`)
+Retrieves details of a specific saved cover letter.
+
+#### Request URL
+`GET /api/v1/cover-letters/607f1f77bcf86cd799439088`
+
+#### Success Response (200 OK)
+```json
+{
+  "success": true,
+  "message": "Cover letter retrieved successfully",
+  "data": {
+    "coverLetter": {
+      "id": "607f1f77bcf86cd799439088",
+      "userId": "607f1f77bcf86cd799439011",
+      "jobId": "607f1f77bcf86cd799439010",
+      "title": "Cover Letter - AWS Developer at Acme Corp",
+      "fileUrl": "/uploads/cover-letters/coverletter-1782831222828.pdf",
+      "filePath": "D:\\CareerCopilot\\career-copilot-be\\uploads\\cover-letters\\coverletter-1782831222828.pdf",
+      "content": "Dear Hiring Manager,\n\nI am writing to express my strong interest in...",
+      "createdAt": "2026-06-30T20:34:28.000Z",
+      "updatedAt": "2026-06-30T20:34:28.000Z"
+    }
+  }
+}
+```
+
+---
+
+### G. Delete Cover Letter (`DELETE /cover-letters/:id`)
+Permanently deletes a saved cover letter record from the database and deletes its generated PDF file from disk.
+
+#### Request URL
+`DELETE /api/v1/cover-letters/607f1f77bcf86cd799439088`
+
+#### Success Response (200 OK)
+```json
+{
+  "success": true,
+  "message": "Cover letter deleted successfully"
+}
+```
+
+---
+
+### H. Generate Referral Message (`POST /ai/referral-message`)
 Drafts a tailored outreach message asking a networking contact for a referral.
 
 #### Request Body
@@ -141,7 +253,7 @@ Drafts a tailored outreach message asking a networking contact for a referral.
 
 ---
 
-### E. Skill Gap Analyzer (`POST /ai/skill-gap`)
+### I. Skill Gap Analyzer (`POST /ai/skill-gap`)
 Runs a deep semantic matching analysis between a resume and a job description to calculate a match score and list missing requirements alongside recommendations.
 
 #### Request Body

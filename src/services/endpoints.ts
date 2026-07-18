@@ -69,7 +69,13 @@ export const API_ENDPOINTS = {
     TAILOR_RESUME: '/ai/resume',
     SAVE_TAILORED_RESUME: '/ai/resume/save',
     GENERATE_COVER_LETTER: '/ai/cover-letter',
+    SAVE_COVER_LETTER: '/ai/cover-letter/save',
     GENERATE_REFERRAL: '/ai/referral-message',
     SKILL_GAP: '/ai/skill-gap',
+  },
+  COVER_LETTERS: {
+    LIST: '/cover-letters',
+    DETAILS: (id: string) => `/cover-letters/${id}`,
+    DELETE: (id: string) => `/cover-letters/${id}`,
   },
 } as const

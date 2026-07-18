@@ -16,13 +16,17 @@ import {
   Mail,
   MessageSquare,
   BookOpen,
-  Globe
+  Trash2,
+  Eye,
+  Download
 } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { Badge } from '@/components/Badge'
 import { Modal } from '@/components/Modal'
+import { DataTable } from '@/components/DataTable'
+import { MarkdownPreview } from '@/components/MarkdownPreview'
 import { useResumesQuery } from '@/hooks/useResumes'
 import { useJobsQuery } from '@/hooks/useJobs'
 import { 
@@ -32,6 +36,11 @@ import {
   useGenerateReferralMutation, 
   useSkillGapQuery 
 } from '@/hooks/useAICopilot'
+import {
+  useCoverLettersQuery,
+  useSaveCoverLetterMutation,
+  useDeleteCoverLetterMutation
+} from '@/hooks/useCoverLetters'
 
 export const AICopilot: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -109,6 +118,11 @@ export const AICopilot: React.FC = () => {
   const generateCoverLetterMutation = useGenerateCoverLetterMutation()
   const generateReferralMutation = useGenerateReferralMutation()
 
+  // Cover Letter CRUD hooks
+  const { data: savedCoverLetters = [], isLoading: isSavedLettersLoading } = useCoverLettersQuery()
+  const saveCoverLetterMutation = useSaveCoverLetterMutation()
+  const deleteCoverLetterMutation = useDeleteCoverLetterMutation()
+
   // Skill Gap Query - runs automatically if both items are selected
   const { 
     data: skillGapResponse, 
@@ -125,11 +139,18 @@ export const AICopilot: React.FC = () => {
   const [tailoredDomains, setTailoredDomains] = useState<string[]>([])
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
   const [saveTitle, setSaveTitle] = useState('')
+  const [tailorViewMode, setTailorViewMode] = useState<'edit' | 'preview'>('preview')
 
   // Cover Letter State
   const [coverLetterPrompt, setCoverLetterPrompt] = useState('')
   const [coverLetterText, setCoverLetterText] = useState('')
   const [copiedCoverLetter, setCopiedCoverLetter] = useState(false)
+  const [isSaveLetterModalOpen, setIsSaveLetterModalOpen] = useState(false)
+  const [saveLetterTitle, setSaveLetterTitle] = useState('')
+  const [selectedLetterId, setSelectedLetterId] = useState<string | null>(null)
+  const [coverLetterViewMode, setCoverLetterViewMode] = useState<'edit' | 'preview'>('preview')
+
+  const activeCoverLetter = savedCoverLetters.find(c => (c._id || c.id) === selectedLetterId)
 
   // Referral Outreach State
   const [referrerName, setReferrerName] = useState('')
@@ -153,6 +174,7 @@ export const AICopilot: React.FC = () => {
           setTailoredSkills(res.skills || [])
           setTailoredTech(res.technologies || [])
           setTailoredDomains(res.domains || [])
+          setTailorViewMode('preview')
           
           // Pre-populate save title
           const companyStr = activeJob ? ` - ${activeJob.company}` : ''
@@ -203,6 +225,11 @@ export const AICopilot: React.FC = () => {
       {
         onSuccess: (text) => {
           setCoverLetterText(text)
+          setCoverLetterViewMode('preview')
+          // Pre-populate save title
+          const companyStr = activeJob ? ` - ${activeJob.company}` : ''
+          const roleStr = activeJob ? ` (${activeJob.title})` : ''
+          setSaveLetterTitle(`Cover Letter${companyStr}${roleStr}`)
           toast.success('Cover letter generated!')
         },
         onError: (err) => {
@@ -210,6 +237,42 @@ export const AICopilot: React.FC = () => {
         }
       }
     )
+  }
+
+  // Trigger saving cover letter
+  const handleSaveCoverLetter = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedResumeId || !selectedJobId || !coverLetterText) return
+
+    try {
+      await saveCoverLetterMutation.mutateAsync({
+        resumeId: selectedResumeId,
+        jobId: selectedJobId,
+        content: coverLetterText,
+        title: saveLetterTitle.trim() || undefined,
+      })
+      toast.success('Cover letter saved to Manager!')
+      setIsSaveLetterModalOpen(false)
+    } catch (err) {
+      const error = err as Error
+      toast.error(error.message || 'Failed to save cover letter.')
+    }
+  }
+
+  // Trigger delete cover letter
+  const handleDeleteCoverLetter = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this cover letter?')) return
+
+    try {
+      await deleteCoverLetterMutation.mutateAsync(id)
+      toast.success('Cover letter deleted.')
+      if (selectedLetterId === id) {
+        setSelectedLetterId(null)
+      }
+    } catch (err) {
+      const error = err as Error
+      toast.error(error.message || 'Failed to delete cover letter.')
+    }
   }
 
   // Trigger generate referral outreach
@@ -270,6 +333,29 @@ export const AICopilot: React.FC = () => {
         form="save-tailored-resume-form"
         variant="primary"
         isLoading={saveTailoredResumeMutation.isPending}
+        className="!py-1.5 !px-3 text-xs"
+      >
+        Save Copy
+      </Button>
+    </div>
+  )
+
+  const saveLetterModalFooter = (
+    <div className="flex items-center justify-end space-x-2">
+      <Button
+        type="button"
+        variant="default"
+        onClick={() => setIsSaveLetterModalOpen(false)}
+        disabled={saveCoverLetterMutation.isPending}
+        className="!py-1.5 !px-3 text-xs"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        form="save-cover-letter-form"
+        variant="primary"
+        isLoading={saveCoverLetterMutation.isPending}
         className="!py-1.5 !px-3 text-xs"
       >
         Save Copy
@@ -599,8 +685,34 @@ export const AICopilot: React.FC = () => {
                   <div className="lg:col-span-2 flex flex-col space-y-4">
                     {tailoredText ? (
                       <div className="flex-1 flex flex-col space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black uppercase tracking-wider text-slate-450">Draft Result (Markdown)</span>
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-black uppercase tracking-wider text-slate-450">Draft Result</span>
+                            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/50 p-0.5 rounded-lg border border-slate-200/50 dark:border-slate-700">
+                              <button
+                                type="button"
+                                onClick={() => setTailorViewMode('preview')}
+                                className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
+                                  tailorViewMode === 'preview'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                }`}
+                              >
+                                Preview
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setTailorViewMode('edit')}
+                                className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
+                                  tailorViewMode === 'edit'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                }`}
+                              >
+                                Edit Source
+                              </button>
+                            </div>
+                          </div>
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"
@@ -622,12 +734,19 @@ export const AICopilot: React.FC = () => {
                           </div>
                         </div>
 
-                        <TextArea
-                          className="font-mono text-xs flex-1 min-h-[300px] bg-slate-900/5 text-slate-800 dark:bg-slate-900/60 dark:text-slate-100"
-                          value={tailoredText}
-                          onChange={(e) => setTailoredText(e.target.value)}
-                          rows={14}
-                        />
+                        {tailorViewMode === 'edit' ? (
+                          <TextArea
+                            className="font-mono text-xs flex-1 min-h-[300px] bg-slate-900/5 text-slate-800 dark:bg-slate-900/60 dark:text-slate-100"
+                            value={tailoredText}
+                            onChange={(e) => setTailoredText(e.target.value)}
+                            rows={14}
+                          />
+                        ) : (
+                          <MarkdownPreview
+                            content={tailoredText}
+                            className="flex-1 min-h-[300px]"
+                          />
+                        )}
                         
                         {/* Extracted Metadata Preview */}
                         {(tailoredSkills.length > 0 || tailoredTech.length > 0 || tailoredDomains.length > 0) && (
@@ -710,23 +829,67 @@ export const AICopilot: React.FC = () => {
                   <div className="lg:col-span-2 flex flex-col space-y-4">
                     {coverLetterText ? (
                       <div className="flex-1 flex flex-col space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black uppercase tracking-wider text-slate-450">Generated Cover Letter</span>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => handleCopyText(coverLetterText, setCopiedCoverLetter)}
-                            icon={copiedCoverLetter ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                          >
-                            {copiedCoverLetter ? 'Copied' : 'Copy'}
-                          </Button>
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-black uppercase tracking-wider text-slate-450">Generated Letter</span>
+                            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/50 p-0.5 rounded-lg border border-slate-200/50 dark:border-slate-700">
+                              <button
+                                type="button"
+                                onClick={() => setCoverLetterViewMode('preview')}
+                                className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
+                                  coverLetterViewMode === 'preview'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                }`}
+                              >
+                                Preview
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setCoverLetterViewMode('edit')}
+                                className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
+                                  coverLetterViewMode === 'edit'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                }`}
+                              >
+                                Edit Source
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => handleCopyText(coverLetterText, setCopiedCoverLetter)}
+                              icon={copiedCoverLetter ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                            >
+                              {copiedCoverLetter ? 'Copied' : 'Copy'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="primary"
+                              onClick={() => setIsSaveLetterModalOpen(true)}
+                              icon={<Save className="h-3.5 w-3.5" />}
+                              className="!bg-emerald-600 hover:!bg-emerald-700 dark:!bg-emerald-500 dark:hover:!bg-emerald-600 border-none"
+                            >
+                              Save to Manager
+                            </Button>
+                          </div>
                         </div>
-                        <TextArea
-                          className="font-sans text-xs flex-1 min-h-[300px] leading-relaxed bg-slate-905/5 dark:bg-slate-900/60"
-                          value={coverLetterText}
-                          onChange={(e) => setCoverLetterText(e.target.value)}
-                          rows={14}
-                        />
+                        {coverLetterViewMode === 'edit' ? (
+                          <TextArea
+                            className="font-sans text-xs flex-1 min-h-[300px] leading-relaxed bg-slate-905/5 dark:bg-slate-900/60"
+                            value={coverLetterText}
+                            onChange={(e) => setCoverLetterText(e.target.value)}
+                            rows={14}
+                          />
+                        ) : (
+                          <MarkdownPreview
+                            content={coverLetterText}
+                            className="flex-1 min-h-[300px]"
+                          />
+                        )}
                       </div>
                     ) : (
                       <div className="flex-1 border border-dashed border-slate-200 dark:border-slate-750 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-slate-50/20">
@@ -738,6 +901,117 @@ export const AICopilot: React.FC = () => {
                       </div>
                     )}
                   </div>
+                </div>
+
+                {/* Saved Cover Letters Section */}
+                <div className="border-t border-slate-150 dark:border-slate-700 pt-8 space-y-4">
+                  <div className="pb-2 text-left">
+                    <h3 className="text-lg font-bold text-slate-950 dark:text-white flex items-center">
+                      <FileText className="mr-2 h-5 w-5 text-violet-650" />
+                      Saved Cover Letters
+                    </h3>
+                    <p className="text-slate-550 dark:text-slate-400 text-xs mt-0.5">
+                      Review, inspect, or delete your saved cover letters generated by the AI Copilot.
+                    </p>
+                  </div>
+
+                  {isSavedLettersLoading ? (
+                    <div className="py-8 flex flex-col items-center justify-center space-y-2">
+                      <RefreshCw className="animate-spin h-6 w-6 text-violet-600" />
+                      <p className="text-[11px] text-slate-500 font-semibold">Retrieving cover letters...</p>
+                    </div>
+                  ) : savedCoverLetters.length === 0 ? (
+                    <div className="py-8 text-center text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-750 rounded-2xl bg-slate-50/20">
+                      <Mail className="h-8 w-8 mx-auto text-slate-350 dark:text-slate-700 mb-2" />
+                      <p className="text-xs font-bold">No saved cover letters</p>
+                      <p className="text-xxs text-slate-450 mt-1">Generate a cover letter above and save it to the manager.</p>
+                    </div>
+                  ) : (
+                    <DataTable
+                      columns={[
+                        {
+                          header: 'Document Title',
+                          accessor: (row) => (
+                            <button
+                              onClick={() => setSelectedLetterId(row._id || row.id)}
+                              className="text-left font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400 focus:outline-none cursor-pointer flex items-center"
+                            >
+                              <FileText className="mr-2 h-4 w-4 opacity-80" />
+                              {row.title}
+                            </button>
+                          ),
+                          sortable: true,
+                          sortKey: 'title'
+                        },
+                        {
+                          header: 'Target Job Context',
+                          accessor: (row) => {
+                            const job = jobs.find(j => (j._id || j.id) === row.jobId)
+                            return job ? (
+                              <span className="font-semibold text-slate-750 dark:text-slate-300">
+                                {job.title} at {job.company}
+                              </span>
+                            ) : (
+                              <span className="text-slate-450 italic">Unknown Job context</span>
+                            )
+                          }
+                        },
+                        {
+                          header: 'Date Saved',
+                          accessor: (row) => (
+                            <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold">
+                              {new Date(row.createdAt).toLocaleDateString(undefined, {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </span>
+                          ),
+                          sortable: true,
+                          sortKey: 'createdAt'
+                        },
+                        {
+                          header: 'Actions',
+                          accessor: (row) => (
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => setSelectedLetterId(row._id || row.id)}
+                                className="p-1.5 min-h-0"
+                                title="Inspect letter"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <a
+                                href={`http://127.0.0.1:5000${row.fileUrl}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center p-1.5 bg-slate-100 dark:bg-slate-750 hover:bg-slate-200 dark:hover:bg-slate-650 text-slate-750 dark:text-slate-200 rounded-lg text-xs font-bold transition select-none disabled:opacity-50"
+                                title="Download PDF"
+                              >
+                                <Download className="h-4 w-4" />
+                              </a>
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                onClick={() => handleDeleteCoverLetter(row._id || row.id)}
+                                disabled={deleteCoverLetterMutation.isPending}
+                                className="p-1.5 min-h-0"
+                                title="Delete letter"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )
+                        }
+                      ]}
+                      data={savedCoverLetters}
+                      pageSize={5}
+                      searchPlaceholder="Search saved letters..."
+                      searchKeys={['title']}
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -865,6 +1139,74 @@ export const AICopilot: React.FC = () => {
             Saving will register this tailored CV as a new entry in your **Resume Manager**. The parsed skills, technologies, and industry domains identified by the AI will be associated with the new document.
           </p>
         </form>
+      </Modal>
+
+      {/* Save Cover Letter Modal */}
+      <Modal
+        isOpen={isSaveLetterModalOpen}
+        onClose={() => setIsSaveLetterModalOpen(false)}
+        title="Save Cover Letter"
+        footer={saveLetterModalFooter}
+        variant="default"
+      >
+        <form id="save-cover-letter-form" onSubmit={handleSaveCoverLetter} className="space-y-4">
+          <Input
+            label="Cover Letter Title"
+            placeholder="e.g. Cover Letter - AWS role at Acme Corp"
+            value={saveLetterTitle}
+            onChange={(e) => setSaveLetterTitle(e.target.value)}
+            required
+            disabled={saveCoverLetterMutation.isPending}
+          />
+          <p className="text-slate-450 text-[11px]">
+            Saving will register this cover letter under your saved templates and compile it as a print-optimized PDF document on disk.
+          </p>
+        </form>
+      </Modal>
+
+      {/* Inspect Cover Letter Modal */}
+      <Modal
+        isOpen={!!selectedLetterId}
+        onClose={() => setSelectedLetterId(null)}
+        title={activeCoverLetter ? `Inspect Cover Letter: ${activeCoverLetter.title}` : 'Loading...'}
+        variant="default"
+      >
+        {activeCoverLetter ? (
+          <div className="space-y-6 text-left">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+              <span className="text-xs text-slate-450 dark:text-slate-400">
+                Created: {new Date(activeCoverLetter.createdAt).toLocaleString()}
+              </span>
+              <a
+                href={`http://127.0.0.1:5000${activeCoverLetter.fileUrl}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center text-xs font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400"
+              >
+                <Download className="mr-1 h-3.5 w-3.5" /> Download PDF
+              </a>
+            </div>
+
+            <TextArea
+              className="font-sans text-xs flex-1 min-h-[300px] leading-relaxed bg-slate-50 dark:bg-slate-900/60"
+              value={activeCoverLetter.content}
+              readOnly
+              rows={14}
+            />
+
+            <div className="pt-4 border-t border-slate-150 dark:border-slate-700 flex justify-end">
+              <Button
+                variant="secondary"
+                onClick={() => handleCopyText(activeCoverLetter.content, () => {})}
+                icon={<Copy className="h-4 w-4" />}
+              >
+                Copy Content
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-slate-500 text-center text-sm">Failed to retrieve cover letter details.</p>
+        )}
       </Modal>
     </div>
   )
