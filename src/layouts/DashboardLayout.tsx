@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, Suspense } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { 
   LayoutDashboard, 
@@ -12,7 +12,8 @@ import {
   Menu, 
   X, 
   User,
-  Sparkles
+  Sparkles,
+  RefreshCw
 } from 'lucide-react'
 
 import { useAppDispatch } from '@/hooks/store'
@@ -165,7 +166,15 @@ export const DashboardLayout: React.FC = () => {
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-6 md:p-8">
           <div className="max-w-7xl mx-auto space-y-6">
-            <Outlet />
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center h-64">
+                  <RefreshCw className="animate-spin h-8 w-8 text-violet-650" />
+                </div>
+              }
+            >
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>

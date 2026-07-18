@@ -1,21 +1,22 @@
+import { lazy } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 
 // Lazy loaded page components/placeholders
-import { Login } from '@/pages/Login'
-import { Signup } from '@/pages/Signup'
-import { ForgotPassword } from '@/pages/ForgotPassword'
-import { Dashboard } from '@/pages/Dashboard'
-import { ResumeBuilder } from '@/pages/ResumeBuilder'
-import { Jobs } from '@/pages/Jobs'
-import { Applications } from '@/pages/Applications'
-import { Referrals } from '@/pages/Referrals'
-import { Analytics } from '@/pages/Analytics'
-import { Settings } from '@/pages/Settings'
-import { DesignSystem } from '@/pages/DesignSystem'
-import { AICopilot } from '@/pages/AICopilot'
+const Login = lazy(() => import('@/pages/Login').then(m => ({ default: m.Login })))
+const Signup = lazy(() => import('@/pages/Signup').then(m => ({ default: m.Signup })))
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword').then(m => ({ default: m.ForgotPassword })))
+const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })))
+const ResumeBuilder = lazy(() => import('@/pages/ResumeBuilder').then(m => ({ default: m.ResumeBuilder })))
+const Jobs = lazy(() => import('@/pages/Jobs').then(m => ({ default: m.Jobs })))
+const Applications = lazy(() => import('@/pages/Applications').then(m => ({ default: m.Applications })))
+const Referrals = lazy(() => import('@/pages/Referrals').then(m => ({ default: m.Referrals })))
+const Analytics = lazy(() => import('@/pages/Analytics').then(m => ({ default: m.Analytics })))
+const Settings = lazy(() => import('@/pages/Settings').then(m => ({ default: m.Settings })))
+const DesignSystem = lazy(() => import('@/pages/DesignSystem').then(m => ({ default: m.DesignSystem })))
+const AICopilot = lazy(() => import('@/pages/AICopilot').then(m => ({ default: m.AICopilot })))
 
 export const router = createBrowserRouter([
   {
