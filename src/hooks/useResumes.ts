@@ -77,7 +77,7 @@ export const useUploadResumeMutation = () => {
         headers: {
           'Content-Type': undefined,
         },
-        timeout: 60000,
+        timeout: 100000,
       })
 
       return response.data?.resume
