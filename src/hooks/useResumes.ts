@@ -11,6 +11,7 @@ export interface Resume {
   skills: string[]
   technologies: string[]
   domains: string[]
+  structuredData?: any
   createdAt: string
   updatedAt: string
 }
@@ -89,10 +90,14 @@ export const useUploadResumeMutation = () => {
   })
 }
 
-interface UpdateResumePayload {
+export interface UpdateResumePayload {
   id: string
   title?: string
   isDefault?: boolean
+  skills?: string[]
+  technologies?: string[]
+  domains?: string[]
+  structuredData?: any
 }
 
 export const useUpdateResumeMutation = () => {
