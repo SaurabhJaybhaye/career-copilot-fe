@@ -27,6 +27,7 @@ export const Select: React.FC<SelectProps> = React.forwardRef<HTMLSelectElement,
         {label && (
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
             {label}
+            {props.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
         <div className="relative">
@@ -70,6 +71,7 @@ export interface MultiSelectProps {
   helperText?: string
   disabled?: boolean
   className?: string
+  required?: boolean
 }
 
 export const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -82,6 +84,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   helperText,
   disabled = false,
   className = '',
+  required = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const isError = !!error
@@ -125,6 +128,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
       {label && (
         <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
           {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       <div className="relative">

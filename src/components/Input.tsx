@@ -20,6 +20,7 @@ export const Input: React.FC<InputProps> = React.forwardRef<HTMLInputElement, In
         {label && (
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
             {label}
+            {props.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
         <div className="relative">
@@ -59,6 +60,7 @@ export const PasswordInput: React.FC<InputProps> = React.forwardRef<HTMLInputEle
         {label && (
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
             {label}
+            {props.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
         <div className="relative">
@@ -101,6 +103,7 @@ export const SearchInput: React.FC<InputProps> = React.forwardRef<HTMLInputEleme
         {label && (
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
             {label}
+            {props.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
         <div className="relative">
@@ -142,6 +145,7 @@ export const TextArea: React.FC<TextAreaProps> = React.forwardRef<HTMLTextAreaEl
         {label && (
           <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
             {label}
+            {props.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
         <div className="relative">
