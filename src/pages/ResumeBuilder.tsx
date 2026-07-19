@@ -59,7 +59,7 @@ const TagManager: React.FC<TagManagerProps> = ({ label, tags, setTags, badgeVari
   
   return (
     <div className="space-y-2 text-left bg-slate-50/50 dark:bg-slate-900/10 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl">
-      <label className="block text-xs font-black text-slate-555 dark:text-slate-400 uppercase tracking-wider">{label}</label>
+      <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">{label}</label>
       <div className="flex flex-wrap gap-1.5 p-2 bg-white dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700 rounded-xl min-h-[40px]">
         {tags.map((tag, i) => (
           <Badge key={i} variant={badgeVariant} className="flex items-center gap-1">
@@ -490,7 +490,7 @@ export const ResumeBuilder: React.FC = () => {
               <Sparkles className="h-7 w-7 text-violet-650 animate-pulse" />
               Verify & Save Profile Data
             </h1>
-            <p className="text-slate-550 dark:text-slate-400 text-xs mt-1">
+            <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
               Gemini has successfully extracted resume segments. Review the pre-filled fields below, adjust if needed, and finalize.
             </p>
           </div>
@@ -525,11 +525,11 @@ export const ResumeBuilder: React.FC = () => {
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center">
                       <Award className="mr-2 h-4.5 w-4.5 text-violet-650" />
                       Resume Completeness Score
                     </h3>
-                    <p className="text-xxs text-slate-455 dark:text-slate-400 mt-1">
+                    <p className="text-xxs text-slate-400 dark:text-slate-400 mt-1">
                       Improve your score to ensure applicant tracking systems (ATS) can parse your profile fully.
                     </p>
                   </div>
@@ -548,7 +548,7 @@ export const ResumeBuilder: React.FC = () => {
                         cx="32"
                         cy="32"
                         r="26"
-                        className="text-violet-650 dark:text-violet-550 stroke-current transition-all duration-300"
+                        className="text-violet-650 dark:text-violet-400 stroke-current transition-all duration-300"
                         strokeWidth="5"
                         strokeDasharray={2 * Math.PI * 26}
                         strokeDashoffset={2 * Math.PI * 26 * (1 - computeResumeStrength().score / 100)}
@@ -556,7 +556,7 @@ export const ResumeBuilder: React.FC = () => {
                         fill="transparent"
                       />
                     </svg>
-                    <span className="absolute text-sm font-black text-slate-850 dark:text-white">
+                    <span className="absolute text-sm font-black text-slate-800 dark:text-white">
                       {computeResumeStrength().score}%
                     </span>
                   </div>
@@ -573,11 +573,11 @@ export const ResumeBuilder: React.FC = () => {
                 {/* Checklist items */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 border-t border-slate-50 dark:border-slate-700">
                   {computeResumeStrength().checklist.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2 text-xxs font-medium text-slate-600 dark:text-slate-355">
+                    <div key={item.id} className="flex items-center gap-2 text-xxs font-medium text-slate-600 dark:text-slate-300">
                       <span className={`flex-shrink-0 h-4.5 w-4.5 rounded-full flex items-center justify-center border transition ${
                         item.isCompleted
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20 dark:border-emerald-800'
-                          : 'bg-slate-55 border-slate-200 text-slate-400 dark:bg-slate-900/30 dark:border-slate-800'
+                           ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20 dark:border-emerald-800'
+                          : 'bg-slate-50 border-slate-200 text-slate-400 dark:bg-slate-900/30 dark:border-slate-800'
                       }`}>
                         {item.isCompleted ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />}
                       </span>
@@ -591,7 +591,7 @@ export const ResumeBuilder: React.FC = () => {
 
               {/* Card: Document Title */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center border-b pb-2.5 border-slate-50 dark:border-slate-700">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center border-b pb-2.5 border-slate-50 dark:border-slate-700">
                   <FileText className="mr-2 h-4.5 w-4.5 text-violet-650" />
                   Document Profile Info
                 </h3>
@@ -606,7 +606,7 @@ export const ResumeBuilder: React.FC = () => {
 
               {/* Card: Contact Info */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center border-b pb-2.5 border-slate-50 dark:border-slate-700">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center border-b pb-2.5 border-slate-50 dark:border-slate-700">
                   <Mail className="mr-2 h-4.5 w-4.5 text-violet-650" />
                   Contact Information
                 </h3>
@@ -640,7 +640,7 @@ export const ResumeBuilder: React.FC = () => {
                 
                 {/* Links Lists */}
                 <div className="space-y-2 pt-2">
-                  <label className="block text-xs font-bold text-slate-755 dark:text-slate-200 uppercase tracking-wider">Profile Links</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">Profile Links</label>
                   <div className="flex flex-wrap gap-1.5 p-2 bg-slate-50/50 dark:bg-slate-900/10 border border-slate-100 dark:border-slate-700 rounded-xl">
                     {editLinks.map((link, idx) => (
                       <Badge key={idx} variant="applied" className="flex items-center gap-1.5">
@@ -667,7 +667,7 @@ export const ResumeBuilder: React.FC = () => {
 
               {/* Card: Summary */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center border-b pb-2.5 border-slate-50 dark:border-slate-700">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center border-b pb-2.5 border-slate-50 dark:border-slate-700">
                   <Award className="mr-2 h-4.5 w-4.5 text-violet-650" />
                   Professional Summary
                 </h3>
@@ -693,9 +693,9 @@ export const ResumeBuilder: React.FC = () => {
               
               {/* Card: Work Experience */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                <div className="flex items-center justify-between border-b pb-2.5 border-slate-55 dark:border-slate-700 flex-wrap gap-2">
-                  <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center">
-                    <Briefcase className="mr-2 h-4.5 w-4.5 text-violet-655" />
+                <div className="flex items-center justify-between border-b pb-2.5 border-slate-100 dark:border-slate-700 flex-wrap gap-2">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center">
+                    <Briefcase className="mr-2 h-4.5 w-4.5 text-violet-650" />
                     Work Experience
                   </h3>
                   <Button type="button" onClick={addExperienceItem} variant="secondary" size="sm" className="flex items-center gap-1 !py-1 !px-2.5 text-xs">
@@ -709,7 +709,7 @@ export const ResumeBuilder: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => removeExperienceItem(expIdx)}
-                        className="absolute top-3 right-3 text-red-500 hover:text-red-750 p-1"
+                        className="absolute top-3 right-3 text-red-500 hover:text-red-700 p-1"
                         title="Remove work experience"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -741,7 +741,7 @@ export const ResumeBuilder: React.FC = () => {
 
                       {/* Achievements Bullets */}
                       <div className="space-y-2">
-                        <label className="block text-xxs font-extrabold text-slate-450 uppercase tracking-wider">Key Achievements</label>
+                        <label className="block text-xxs font-extrabold text-slate-400 uppercase tracking-wider">Key Achievements</label>
                         <ul className="list-disc pl-5 space-y-1">
                           {exp.achievements?.map((ach, achIdx) => (
                             <li key={achIdx} className="text-xs text-slate-600 dark:text-slate-300 relative group pr-6">
@@ -777,7 +777,7 @@ export const ResumeBuilder: React.FC = () => {
                     </div>
                   ))}
                   {editExperience.length === 0 && (
-                    <p className="text-xs text-slate-450 italic text-center py-4">No work experience items added yet.</p>
+                    <p className="text-xs text-slate-400 italic text-center py-4">No work experience items added yet.</p>
                   )}
                 </div>
               </div>
@@ -785,7 +785,7 @@ export const ResumeBuilder: React.FC = () => {
               {/* Card: Projects */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
                 <div className="flex items-center justify-between border-b pb-2.5 border-slate-50 dark:border-slate-700 flex-wrap gap-2">
-                  <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center">
                     <FolderGit2 className="mr-2 h-4.5 w-4.5 text-violet-650" />
                     Projects
                   </h3>
@@ -800,7 +800,7 @@ export const ResumeBuilder: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => removeProjectItem(projIdx)}
-                        className="absolute top-3 right-3 text-red-500 hover:text-red-750 p-1"
+                        className="absolute top-3 right-3 text-red-500 hover:text-red-700 p-1"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -824,8 +824,8 @@ export const ResumeBuilder: React.FC = () => {
 
                       {/* Project Tech stack tags */}
                       <div className="space-y-1.5">
-                        <label className="block text-xxs font-extrabold text-slate-450 uppercase tracking-wider">Technologies Used</label>
-                        <div className="flex flex-wrap gap-1 p-1 bg-slate-550/5 dark:bg-slate-900/20 rounded-lg min-h-[30px]">
+                        <label className="block text-xxs font-extrabold text-slate-400 uppercase tracking-wider">Technologies Used</label>
+                        <div className="flex flex-wrap gap-1 p-1 bg-slate-500/5 dark:bg-slate-900/20 rounded-lg min-h-[30px]">
                           {proj.technologies?.map((tech, techIdx) => (
                             <Badge key={techIdx} variant="interview" className="text-[10px] !py-0.2 !px-1.5 flex items-center gap-1">
                               {tech}
@@ -854,15 +854,15 @@ export const ResumeBuilder: React.FC = () => {
                     </div>
                   ))}
                   {editProjects.length === 0 && (
-                    <p className="text-xs text-slate-450 italic text-center py-4">No project items added yet.</p>
+                    <p className="text-xs text-slate-400 italic text-center py-4">No project items added yet.</p>
                   )}
                 </div>
               </div>
 
               {/* Card: Education */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-                <div className="flex items-center justify-between border-b pb-2.5 border-slate-55 dark:border-slate-700 flex-wrap gap-2">
-                  <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center">
+                <div className="flex items-center justify-between border-b pb-2.5 border-slate-100 dark:border-slate-700 flex-wrap gap-2">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center">
                     <GraduationCap className="mr-2 h-4.5 w-4.5 text-violet-650" />
                     Education
                   </h3>
@@ -915,7 +915,7 @@ export const ResumeBuilder: React.FC = () => {
                     </div>
                   ))}
                   {editEducation.length === 0 && (
-                    <p className="text-xs text-slate-450 italic text-center py-4">No education items added yet.</p>
+                    <p className="text-xs text-slate-400 italic text-center py-4">No education items added yet.</p>
                   )}
                 </div>
               </div>
@@ -946,7 +946,7 @@ export const ResumeBuilder: React.FC = () => {
 
       <div className="pb-5 border-b border-slate-200 dark:border-slate-700 text-left">
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Resume Manager</h1>
-        <p className="text-slate-550 dark:text-slate-400 mt-1">
+        <p className="text-slate-500 dark:text-slate-400 mt-1">
           Upload resumes (PDF/DOCX) to extract core tech stacks, and select which document acts as your default profile target.
         </p>
       </div>
@@ -983,11 +983,11 @@ export const ResumeBuilder: React.FC = () => {
                 />
                 <label
                   htmlFor="resume-file-input"
-                  className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-200 text-slate-750 dark:text-slate-200 rounded-lg text-xs font-bold cursor-pointer transition select-none disabled:opacity-50"
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold cursor-pointer transition select-none disabled:opacity-50"
                 >
                   Browse File
                 </label>
-                <span className="text-xxs text-slate-450 dark:text-slate-400 mt-2 block">
+                <span className="text-xxs text-slate-400 dark:text-slate-400 mt-2 block">
                   {file ? file.name : 'No file selected (max 5MB)'}
                 </span>
               </div>
@@ -1008,7 +1008,7 @@ export const ResumeBuilder: React.FC = () => {
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
             <div className="pb-4 mb-4 border-b border-slate-100 dark:border-slate-700 text-left">
-              <h3 className="text-lg font-bold text-slate-955 dark:text-white flex items-center">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center">
                 <FileText className="mr-2 h-5 w-5 text-violet-650" />
                 Your Stored Resumes
               </h3>
@@ -1020,10 +1020,10 @@ export const ResumeBuilder: React.FC = () => {
                 <p className="text-xs text-slate-500 font-semibold">Retrieving resumes...</p>
               </div>
             ) : resumes.length === 0 ? (
-              <div className="py-12 text-center text-slate-400 dark:text-slate-550 border border-dashed border-slate-200 dark:border-slate-750 rounded-2xl bg-slate-50/20">
-                <FileText className="h-10 w-10 mx-auto text-slate-350 mb-2" />
+              <div className="py-12 text-center text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50/20">
+                <FileText className="h-10 w-10 mx-auto text-slate-300 mb-2" />
                 <p className="text-xs font-bold">No resumes registered.</p>
-                <p className="text-xxs text-slate-450 mt-1">Upload a resume file to parse your profile data.</p>
+                <p className="text-xxs text-slate-400 mt-1">Upload a resume file to parse your profile data.</p>
               </div>
             ) : (
               <DataTable
@@ -1048,20 +1048,20 @@ export const ResumeBuilder: React.FC = () => {
         {isDetailsLoading ? (
           <div className="py-12 flex flex-col items-center justify-center space-y-3">
             <Loader2 className="animate-spin h-8 w-8 text-violet-600" />
-            <p className="text-xs text-slate-550 font-semibold">Analyzing parsed keywords...</p>
+            <p className="text-xs text-slate-500 font-semibold">Analyzing parsed keywords...</p>
           </div>
         ) : activeResume ? (
           <div className="space-y-6 text-left">
             {/* Metadata and file downloader */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
-              <span className="text-xs text-slate-450 dark:text-slate-400">
+              <span className="text-xs text-slate-400 dark:text-slate-400">
                 Uploaded: {new Date(activeResume.createdAt).toLocaleString()}
               </span>
               <a
                 href={`http://127.0.0.1:5000${activeResume.fileUrl}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center text-xs font-bold text-violet-655 hover:text-violet-500 hover:underline dark:text-violet-400"
+                className="inline-flex items-center text-xs font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400"
               >
                 <Download className="mr-1 h-3.5 w-3.5" /> Download Document
               </a>
@@ -1070,7 +1070,7 @@ export const ResumeBuilder: React.FC = () => {
             {/* Extracted Core Skills */}
             <div className="space-y-2">
               <h4 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
-                <Award className="mr-1.5 h-4 w-4 text-emerald-555" /> Core Skills
+                <Award className="mr-1.5 h-4 w-4 text-emerald-500" /> Core Skills
               </h4>
               <div className="flex flex-wrap gap-1.5">
                 {activeResume.skills && activeResume.skills.length > 0 ? (
@@ -1078,7 +1078,7 @@ export const ResumeBuilder: React.FC = () => {
                     <Badge key={i} variant="offer">{tag}</Badge>
                   ))
                 ) : (
-                  <span className="text-xs text-slate-450 italic">No skills extracted.</span>
+                  <span className="text-xs text-slate-400 italic">No skills extracted.</span>
                 )}
               </div>
             </div>
@@ -1086,7 +1086,7 @@ export const ResumeBuilder: React.FC = () => {
             {/* Extracted Technologies */}
             <div className="space-y-2">
               <h4 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
-                <Cpu className="mr-1.5 h-4 w-4 text-purple-555" /> Technologies
+                <Cpu className="mr-1.5 h-4 w-4 text-violet-500" /> Technologies
               </h4>
               <div className="flex flex-wrap gap-1.5">
                 {activeResume.technologies && activeResume.technologies.length > 0 ? (
@@ -1094,7 +1094,7 @@ export const ResumeBuilder: React.FC = () => {
                     <Badge key={i} variant="interview">{tag}</Badge>
                   ))
                 ) : (
-                  <span className="text-xs text-slate-450 italic">No tech keywords extracted.</span>
+                  <span className="text-xs text-slate-400 italic">No tech keywords extracted.</span>
                 )}
               </div>
             </div>
@@ -1102,7 +1102,7 @@ export const ResumeBuilder: React.FC = () => {
             {/* Extracted Domains */}
             <div className="space-y-2">
               <h4 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
-                <Globe className="mr-1.5 h-4 w-4 text-blue-555" /> Industry Domains
+                <Globe className="mr-1.5 h-4 w-4 text-blue-500" /> Industry Domains
               </h4>
               <div className="flex flex-wrap gap-1.5">
                 {activeResume.domains && activeResume.domains.length > 0 ? (
@@ -1110,13 +1110,13 @@ export const ResumeBuilder: React.FC = () => {
                     <Badge key={i} variant="applied">{tag}</Badge>
                   ))
                 ) : (
-                  <span className="text-xs text-slate-455 italic">No domains extracted.</span>
+                  <span className="text-xs text-slate-400 italic">No domains extracted.</span>
                 )}
               </div>
             </div>
 
             {/* AI Action */}
-            <div className="pt-4 border-t border-slate-150 dark:border-slate-700 flex justify-end">
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
               <Button
                 variant="primary"
                 onClick={() => {
@@ -1129,7 +1129,7 @@ export const ResumeBuilder: React.FC = () => {
             </div>
           </div>
         ) : (
-          <p className="text-slate-550 text-center text-sm">Failed to retrieve resume details.</p>
+          <p className="text-slate-500 text-center text-sm">Failed to retrieve resume details.</p>
         )}
       </Modal>
     </div>

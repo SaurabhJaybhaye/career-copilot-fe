@@ -135,7 +135,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           } ${isOpen ? 'ring-2 ring-violet-500 border-transparent' : ''}`}
         >
           {selectedValues.length === 0 ? (
-            <span className="text-slate-450 select-none">{placeholder}</span>
+            <span className="text-slate-400 select-none">{placeholder}</span>
           ) : (
             selectedValues.map((val) => {
               const matchedOption = options.find((opt) => opt.value === val)
@@ -158,13 +158,13 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
             })
           )}
 
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-450 pointer-events-none">
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">
             <ChevronDown className="h-4.5 w-4.5" />
           </div>
         </div>
 
         {isOpen && (
-          <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-805 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl max-h-60 overflow-y-auto py-1.5 animate-in fade-in-50 zoom-in-95 duration-100">
+          <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl max-h-60 overflow-y-auto py-1.5 animate-in fade-in-50 zoom-in-95 duration-100">
             {options.length === 0 ? (
               <div className="px-4 py-3 text-sm text-slate-400 dark:text-slate-500 text-center select-none">
                 No options available

@@ -166,7 +166,7 @@ export const Dashboard: React.FC = () => {
               className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between"
             >
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-550 dark:text-slate-400">{stat.label}</span>
+                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{stat.label}</span>
                 <div className={`p-2.5 rounded-xl bg-gradient-to-br ${stat.color} text-white`}>
                   <Icon className="h-5 w-5" />
                 </div>
@@ -188,13 +188,13 @@ export const Dashboard: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm text-left">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center">
-                <Calendar className="mr-2 h-5 w-5 text-violet-550" />
+                <Calendar className="mr-2 h-5 w-5 text-violet-650" />
                 Upcoming Follow-ups & Reminders
               </h3>
               <div className="flex items-center space-x-2">
                 <button 
                   onClick={() => setIsFollowUpOpen(true)}
-                  className="text-xs font-bold text-violet-650 hover:text-violet-505 dark:text-violet-400 flex items-center bg-transparent cursor-pointer border-none"
+                  className="text-xs font-bold text-violet-650 hover:text-violet-500 dark:text-violet-400 flex items-center bg-transparent cursor-pointer border-none"
                 >
                   <Plus className="h-3.5 w-3.5 mr-0.5" /> Add Reminder
                 </button>
@@ -217,11 +217,11 @@ export const Dashboard: React.FC = () => {
                     <div className="space-y-1 text-left flex-1 min-w-0">
                       <h4 className="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">
                         {item.job?.company || 'General'} &bull;{' '}
-                        <span className="text-slate-550 dark:text-slate-400 font-normal">
+                        <span className="text-slate-500 dark:text-slate-400 font-normal">
                           {item.job?.title || item.title}
                         </span>
                       </h4>
-                      <p className="text-xs text-slate-450 truncate">{item.description || 'Follow-up Task'}</p>
+                      <p className="text-xs text-slate-400 truncate">{item.description || 'Follow-up Task'}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="text-xs sm:text-sm font-bold bg-violet-50 dark:bg-violet-950/40 text-violet-650 dark:text-violet-400 px-3.5 py-1.5 rounded-full whitespace-nowrap">
@@ -234,7 +234,7 @@ export const Dashboard: React.FC = () => {
                       <button
                         onClick={() => handleDeleteFollowUp(item.id)}
                         disabled={deleteFollowUpMutation.isPending}
-                        className="p-1.5 rounded-lg text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-750 hover:text-red-500 transition cursor-pointer border-none bg-transparent"
+                        className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-red-500 transition cursor-pointer border-none bg-transparent"
                         title="Delete reminder"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -267,7 +267,7 @@ export const Dashboard: React.FC = () => {
                     </div>
                     
                     <div className="space-y-0.5 pl-2">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-205">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                         {item.description}
                       </p>
                       <span className="text-xxs text-slate-400 block uppercase font-bold">
@@ -297,7 +297,7 @@ export const Dashboard: React.FC = () => {
               <div className="space-y-3">
                 <Link 
                   to="/resume-builder" 
-                  className="flex items-center p-3.5 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 transition duration-200"
+                  className="flex items-center p-3.5 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition duration-200"
                 >
                   <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mr-3">
                     <FileText className="h-5 w-5" />
@@ -306,12 +306,12 @@ export const Dashboard: React.FC = () => {
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center">
                       Upload Resume <ArrowUpRight className="ml-1 h-3.5 w-3.5 opacity-60" />
                     </h4>
-                    <p className="text-xs text-slate-450 dark:text-slate-400 mt-0.5">Parse keywords with AI</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-400 mt-0.5">Parse keywords with AI</p>
                   </div>
                 </Link>
                 <Link 
                   to="/jobs" 
-                  className="flex items-center p-3.5 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 transition duration-200"
+                  className="flex items-center p-3.5 rounded-xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition duration-200"
                 >
                   <div className="p-2.5 rounded-lg bg-violet-50 dark:bg-violet-900/30 text-violet-650 dark:text-violet-400 mr-3">
                     <Briefcase className="h-5 w-5" />
@@ -320,7 +320,7 @@ export const Dashboard: React.FC = () => {
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center">
                       Match Job Role <ArrowUpRight className="ml-1 h-3.5 w-3.5 opacity-60" />
                     </h4>
-                    <p className="text-xs text-slate-455 dark:text-slate-400 mt-0.5">Diagnose matching percentages</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-400 mt-0.5">Diagnose matching percentages</p>
                   </div>
                 </Link>
               </div>
@@ -329,7 +329,7 @@ export const Dashboard: React.FC = () => {
             <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-center">
               <Link 
                 to="/design-system" 
-                className="text-xs text-violet-655 dark:text-violet-400 font-bold hover:underline"
+                className="text-xs text-violet-650 dark:text-violet-400 font-bold hover:underline"
               >
                 Access Developer Playground
               </Link>
@@ -341,80 +341,120 @@ export const Dashboard: React.FC = () => {
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
               Hiring Funnel & Yield
             </h3>
-            <p className="text-xxs text-slate-450 dark:text-slate-400 mb-4">
+            <p className="text-xxs text-slate-400 dark:text-slate-400 mb-4">
               Track conversion ratios between application stages in your active funnel.
             </p>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               {/* Applied Stage */}
-              <div className="bg-gradient-to-r from-blue-500/5 to-indigo-500/5 dark:from-blue-950/10 dark:to-indigo-950/10 border border-slate-100 dark:border-slate-700 rounded-xl p-3 flex items-center justify-between hover:scale-[1.01] transition-all duration-200">
-                <div className="flex items-center gap-2.5">
-                  <div className="h-2 w-2 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
-                  <span className="text-xs font-extrabold text-slate-750 dark:text-slate-200">Applied</span>
+              <div className="bg-gradient-to-r from-blue-500/5 to-indigo-500/5 dark:from-blue-950/10 dark:to-indigo-950/10 border border-slate-100 dark:border-slate-700 rounded-xl p-3.5 hover:scale-[1.01] transition-all duration-200">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Applied</span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-sm font-black text-slate-900 dark:text-white">{summary?.applicationsCount?.applied ?? 0}</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">100% of pipeline</span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-xs font-black text-slate-900 dark:text-white">{summary?.applicationsCount?.applied ?? 0}</span>
-                  <span className="text-[10px] text-slate-450 block">100% of pipeline</span>
+                {/* Progress bar */}
+                <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                  <div className="bg-blue-500 h-full rounded-full transition-all duration-500" style={{ width: '100%' }} />
                 </div>
               </div>
 
-              {/* Conversion Indicator */}
-              <div className="flex justify-center text-slate-400 text-[10px] font-bold gap-1 items-center select-none py-0.5">
-                <span>Conversion:</span>
-                <span className="text-violet-650 dark:text-violet-400 font-extrabold">
-                  {summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.interviewing ?? 0) / summary.applicationsCount.applied) * 100) : 0}%
-                </span>
-                <span>➔</span>
-              </div>
+              {/* Conversion Indicator: Applied ➔ Interviewing */}
+              {(() => {
+                const pct = summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.interviewing ?? 0) / summary.applicationsCount.applied) * 100) : 0;
+                return (
+                  <div className="flex justify-center -my-1">
+                    <div className="bg-violet-50/50 dark:bg-violet-950/20 text-violet-650 dark:text-violet-400 border border-violet-100 dark:border-violet-800/60 text-[10px] px-2.5 py-0.5 rounded-full font-black flex items-center gap-1 select-none shadow-sm">
+                      <span>↓ {pct}% conversion</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Interviewing Stage */}
-              <div className="mx-4 bg-gradient-to-r from-purple-500/5 to-violet-500/5 dark:from-purple-950/10 dark:to-violet-950/10 border border-slate-150 dark:border-slate-700/80 rounded-xl p-3 flex items-center justify-between hover:scale-[1.01] transition-all duration-200">
-                <div className="flex items-center gap-2.5">
-                  <div className="h-2 w-2 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50" />
-                  <span className="text-xs font-extrabold text-slate-750 dark:text-slate-200">Interviewing</span>
+              <div className="bg-gradient-to-r from-purple-500/5 to-violet-500/5 dark:from-purple-950/10 dark:to-violet-950/10 border border-slate-200 dark:border-slate-700/80 rounded-xl p-3.5 hover:scale-[1.01] transition-all duration-200">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50" />
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Interviewing</span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-sm font-black text-slate-900 dark:text-white">{summary?.applicationsCount?.interviewing ?? 0}</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      {summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.interviewing ?? 0) / summary.applicationsCount.applied) * 100) : 0}% yield
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-xs font-black text-slate-900 dark:text-white">{summary?.applicationsCount?.interviewing ?? 0}</span>
-                  <span className="text-[10px] text-slate-455 block">
-                    {summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.interviewing ?? 0) / summary.applicationsCount.applied) * 100) : 0}% yield
-                  </span>
-                </div>
+                {/* Progress bar */}
+                {(() => {
+                  const pct = summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.interviewing ?? 0) / summary.applicationsCount.applied) * 100) : 0;
+                  return (
+                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-purple-500 h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                    </div>
+                  );
+                })()}
               </div>
 
-              {/* Conversion Indicator */}
-              <div className="flex justify-center text-slate-400 text-[10px] font-bold gap-1 items-center select-none py-0.5">
-                <span>Conversion:</span>
-                <span className="text-violet-650 dark:text-violet-400 font-extrabold">
-                  {summary?.applicationsCount?.interviewing ? Math.round(((summary?.applicationsCount?.offered ?? 0) / summary.applicationsCount.interviewing) * 100) : 0}%
-                </span>
-                <span>➔</span>
-              </div>
+              {/* Conversion Indicator: Interviewing ➔ Offered */}
+              {(() => {
+                const pct = summary?.applicationsCount?.interviewing ? Math.round(((summary?.applicationsCount?.offered ?? 0) / summary.applicationsCount.interviewing) * 100) : 0;
+                return (
+                  <div className="flex justify-center -my-1">
+                    <div className="bg-violet-50/50 dark:bg-violet-950/20 text-violet-650 dark:text-violet-400 border border-violet-100 dark:border-violet-800/60 text-[10px] px-2.5 py-0.5 rounded-full font-black flex items-center gap-1 select-none shadow-sm">
+                      <span>↓ {pct}% conversion</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Offered Stage */}
-              <div className="mx-8 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 dark:from-emerald-950/10 dark:to-teal-950/10 border border-slate-200 dark:border-slate-700/60 rounded-xl p-3 flex items-center justify-between hover:scale-[1.01] transition-all duration-200">
-                <div className="flex items-center gap-2.5">
-                  <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-                  <span className="text-xs font-extrabold text-slate-750 dark:text-slate-200">Offered</span>
+              <div className="bg-gradient-to-r from-emerald-500/5 to-teal-500/5 dark:from-emerald-950/10 dark:to-teal-950/10 border border-slate-200 dark:border-slate-700/60 rounded-xl p-3.5 hover:scale-[1.01] transition-all duration-200">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Offered</span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-sm font-black text-slate-900 dark:text-white">{summary?.applicationsCount?.offered ?? 0}</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      {summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.offered ?? 0) / summary.applicationsCount.applied) * 100) : 0}% yield
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-xs font-black text-slate-900 dark:text-white">{summary?.applicationsCount?.offered ?? 0}</span>
-                  <span className="text-[10px] text-slate-455 block">
-                    {summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.offered ?? 0) / summary.applicationsCount.applied) * 100) : 0}% yield
-                  </span>
-                </div>
+                {/* Progress bar */}
+                {(() => {
+                  const pct = summary?.applicationsCount?.applied ? Math.round(((summary?.applicationsCount?.offered ?? 0) / summary.applicationsCount.applied) * 100) : 0;
+                  return (
+                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
             {/* Funnel Exceptions Info Footer */}
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[10px] font-bold text-slate-450">
-              <span className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
-                Rejected: <strong className="text-slate-700 dark:text-slate-350">{summary?.applicationsCount?.rejected ?? 0}</strong>
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-                Withdrawn: <strong className="text-slate-700 dark:text-slate-350">{summary?.applicationsCount?.withdrawn ?? 0}</strong>
-              </span>
+            <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-3">
+              <div className="flex-1 bg-red-50/50 dark:bg-red-950/10 border border-red-100/50 dark:border-red-950/30 rounded-xl p-2 flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase">
+                  <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                  Rejected
+                </span>
+                <span className="font-extrabold text-red-600 dark:text-red-400">{summary?.applicationsCount?.rejected ?? 0}</span>
+              </div>
+              <div className="flex-1 bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700/60 rounded-xl p-2 flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase">
+                  <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                  Withdrawn
+                </span>
+                <span className="font-extrabold text-slate-700 dark:text-slate-300">{summary?.applicationsCount?.withdrawn ?? 0}</span>
+              </div>
             </div>
           </div>
         </div>

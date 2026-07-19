@@ -250,7 +250,7 @@ export const Applications: React.FC = () => {
             <KanbanSquare className="mr-2.5 h-8 w-8 text-violet-650" />
             Application Tracker
           </h1>
-          <p className="text-slate-550 dark:text-slate-400 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             Drag cards to update application phases, manage linked CVs, and log notes.
           </p>
         </div>
@@ -270,7 +270,7 @@ export const Applications: React.FC = () => {
         </div>
       ) : applications.length === 0 ? (
         <div className="py-20 text-center text-slate-400 dark:text-slate-500 max-w-md mx-auto">
-          <Briefcase className="h-12 w-12 mx-auto text-slate-350 mb-3" />
+          <Briefcase className="h-12 w-12 mx-auto text-slate-300 mb-3" />
           <h4 className="font-extrabold text-slate-900 dark:text-white text-base">No Applications Tracked Yet</h4>
           <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
             Choose a target job description and link your customized CV to track pipeline stages and interview schedules.
@@ -369,7 +369,7 @@ export const Applications: React.FC = () => {
                   <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
                     {col.label}
                   </span>
-                  <Badge variant="applied" className="!py-0.5 !px-2 text-xxs font-extrabold bg-slate-200/60 text-slate-700 dark:bg-slate-800 dark:text-slate-350 border-none">
+                  <Badge variant="applied" className="!py-0.5 !px-2 text-xxs font-extrabold bg-slate-200/60 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-none">
                     {colApps.length}
                   </Badge>
                 </div>
@@ -393,10 +393,10 @@ export const Applications: React.FC = () => {
                           onDragStart={(e) => handleDragStart(e, id)}
                           onDragEnd={handleDragEnd}
                           onClick={() => setSelectedAppId(id)}
-                          className="bg-white dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-150 dark:border-slate-700/60 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition duration-150 text-left flex flex-col justify-between space-y-3.5"
+                          className="bg-white dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition duration-150 text-left flex flex-col justify-between space-y-3.5"
                         >
                           <div>
-                            <span className="text-[10px] font-extrabold text-violet-650 bg-violet-50 dark:bg-violet-950/20 px-2 py-0.5 rounded-lg border border-violet-100 dark:border-violet-900/30">
+                            <span className="text-[10px] font-extrabold text-violet-600 bg-violet-50 dark:bg-violet-950/20 px-2 py-0.5 rounded-lg border border-violet-100 dark:border-violet-900/30">
                               {job?.company || 'Unknown Company'}
                             </span>
                             <h4 className="text-xs font-bold text-slate-900 dark:text-white mt-2 line-clamp-2 leading-tight">
@@ -445,7 +445,7 @@ export const Applications: React.FC = () => {
       >
         <form id="add-app-form" onSubmit={handleAddSubmit} className="space-y-4 text-left">
           {availableJobs.length === 0 ? (
-            <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-250 dark:border-amber-900/30 text-amber-800 dark:text-amber-300 rounded-xl text-xs flex items-center space-x-2">
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 text-amber-800 dark:text-amber-300 rounded-xl text-xs flex items-center space-x-2">
               <Clock className="h-5 w-5 flex-shrink-0" />
               <span>
                 All registered target jobs are currently tracked in the pipeline. Please create a new target job inside the Job Matches module first.
@@ -556,7 +556,7 @@ export const Applications: React.FC = () => {
                     <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
                       Linked Resume
                     </p>
-                    <p className="text-[10px] text-slate-450 mt-0.5 leading-none">
+                    <p className="text-[10px] text-slate-400 mt-0.5 leading-none">
                       {activeApp.resumeId.title}
                     </p>
                   </div>
@@ -565,21 +565,21 @@ export const Applications: React.FC = () => {
                   href={`http://127.0.0.1:5000${activeApp.resumeId.fileUrl}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-lg text-slate-500 dark:text-slate-350 transition"
+                  className="p-2 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-slate-500 dark:text-slate-300 transition"
                   title="Download linked CV"
                 >
                   <Download className="h-4 w-4" />
                 </a>
               </div>
             ) : (
-              <div className="text-xs text-slate-450 italic p-3 bg-slate-50 dark:bg-slate-900/20 rounded-xl text-center">
+              <div className="text-xs text-slate-400 italic p-3 bg-slate-50 dark:bg-slate-900/20 rounded-xl text-center">
                 No customized resume linked to this application.
               </div>
             )}
 
             {/* Application Stages Timeline */}
             <div className="space-y-3">
-              <h4 className="text-xs font-extrabold text-slate-550 dark:text-slate-400 uppercase tracking-wider">
+              <h4 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Pipeline Timeline & Comments
               </h4>
               <div className="space-y-4 max-h-[220px] overflow-y-auto pr-1">
@@ -591,21 +591,21 @@ export const Applications: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-extrabold text-slate-850 dark:text-slate-200 capitalize">
+                          <span className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200 capitalize">
                             Phase: {event.status}
                           </span>
-                          <span className="text-[9px] font-semibold text-slate-450">
+                          <span className="text-[9px] font-semibold text-slate-400">
                             {new Date(event.updatedAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-350 mt-1 leading-relaxed bg-slate-50/50 dark:bg-slate-900/20 p-2 rounded-lg border border-slate-100 dark:border-slate-800/80">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed bg-slate-50/50 dark:bg-slate-900/20 p-2 rounded-lg border border-slate-100 dark:border-slate-800/80">
                           {event.note || 'Status updated.'}
                         </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-slate-450 italic">No timeline history recorded.</p>
+                  <p className="text-xs text-slate-400 italic">No timeline history recorded.</p>
                 )}
               </div>
             </div>

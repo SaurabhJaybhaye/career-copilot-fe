@@ -192,7 +192,7 @@ export const Referrals: React.FC = () => {
             {row.referrerEmail && (
               <a 
                 href={`mailto:${row.referrerEmail}`}
-                className="text-slate-400 hover:text-slate-650 dark:hover:text-slate-200 transition"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
                 title={row.referrerEmail}
               >
                 <Mail className="h-3.5 w-3.5" />
@@ -229,7 +229,7 @@ export const Referrals: React.FC = () => {
     {
       header: 'Tracking Notes',
       accessor: (row: Referral) => (
-        <span className="text-slate-550 dark:text-slate-400 text-xs line-clamp-1 max-w-[200px] text-left">
+        <span className="text-slate-500 dark:text-slate-400 text-xs line-clamp-1 max-w-[200px] text-left">
           {row.notes || 'No custom notes logged.'}
         </span>
       )
@@ -340,7 +340,7 @@ export const Referrals: React.FC = () => {
             <Users className="mr-2.5 h-8 w-8 text-violet-650" />
             Referrals
           </h1>
-          <p className="text-slate-550 dark:text-slate-400 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             Track employee outreach requests, log progress states, and utilize AI template generators.
           </p>
         </div>
@@ -361,9 +361,9 @@ export const Referrals: React.FC = () => {
           </div>
         ) : referrals.length === 0 ? (
           <div className="py-16 text-center text-slate-400 dark:text-slate-500 max-w-md mx-auto">
-            <Users className="h-12 w-12 mx-auto text-slate-350 mb-3" />
+            <Users className="h-12 w-12 mx-auto text-slate-300 mb-3" />
             <h4 className="font-extrabold text-slate-900 dark:text-white text-base">No Referrals Registered</h4>
-            <p className="text-xs text-slate-550 max-w-sm mt-1.5 leading-relaxed">
+            <p className="text-xs text-slate-500 max-w-sm mt-1.5 leading-relaxed">
               Log employee networks to manage outreach template copies, update statuses, and track pipeline conversions.
             </p>
             <Button
@@ -396,7 +396,7 @@ export const Referrals: React.FC = () => {
       >
         <form id="add-ref-form" onSubmit={handleAddSubmit} className="space-y-4 text-left">
           {jobs.length === 0 ? (
-            <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-250 dark:border-amber-900/30 text-amber-800 dark:text-amber-300 rounded-xl text-xs">
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 text-amber-800 dark:text-amber-300 rounded-xl text-xs">
               Please register a target job posting first in Job Matches to associate referrers.
             </div>
           ) : (
@@ -468,7 +468,7 @@ export const Referrals: React.FC = () => {
       >
         <form id="edit-ref-form" onSubmit={handleEditSubmit} className="space-y-4 text-left">
           <div className="p-3 bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-xl space-y-1 text-xs">
-            <p className="font-bold text-slate-850 dark:text-slate-350">
+            <p className="font-bold text-slate-800 dark:text-slate-300">
               Referrer Contact details
             </p>
             <p className="text-slate-500 dark:text-slate-400">
@@ -519,9 +519,9 @@ export const Referrals: React.FC = () => {
       >
         {activeReferral ? (
           <div className="space-y-5 text-left">
-            <div className="flex items-center space-x-2 text-xs font-bold text-slate-500 pb-3 border-b border-slate-150 dark:border-slate-700">
+            <div className="flex items-center space-x-2 text-xs font-bold text-slate-500 pb-3 border-b border-slate-200 dark:border-slate-700">
               <span>Generating outreach templates for</span>
-              <Badge variant="applied" className="capitalize text-xxs font-extrabold bg-slate-200/50 border-none text-slate-750">
+              <Badge variant="applied" className="capitalize text-xxs font-extrabold bg-slate-200/50 border-none text-slate-700">
                 {activeReferral.referrerName}
               </Badge>
             </div>
@@ -538,7 +538,7 @@ export const Referrals: React.FC = () => {
                   className={`py-2 px-4 text-xs font-extrabold capitalize cursor-pointer transition select-none ${
                     activeTemplateTab === tab
                       ? 'border-b-2 border-violet-500 text-violet-600 dark:text-violet-400'
-                      : 'text-slate-450 hover:text-slate-650'
+                      : 'text-slate-400 hover:text-slate-600'
                   }`}
                 >
                   {tab === 'linkedin' ? 'LinkedIn' : tab === 'email' ? 'Email' : 'Casual Message'}
@@ -547,8 +547,8 @@ export const Referrals: React.FC = () => {
             </div>
 
             {/* Message Preview Box */}
-            <div className="relative bg-slate-50 dark:bg-slate-900/40 p-4.5 rounded-2xl border border-slate-150 dark:border-slate-700 space-y-3">
-              <pre className="text-xs text-slate-700 dark:text-slate-350 leading-relaxed font-sans whitespace-pre-wrap select-all">
+            <div className="relative bg-slate-50 dark:bg-slate-900/40 p-4.5 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+              <pre className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-sans whitespace-pre-wrap select-all">
                 {getAIOutreachMessage(activeReferral)}
               </pre>
 
@@ -580,7 +580,7 @@ export const Referrals: React.FC = () => {
             </div>
 
             {/* Close button action */}
-            <div className="pt-3.5 border-t border-slate-150 dark:border-slate-700 flex justify-end">
+            <div className="pt-3.5 border-t border-slate-200 dark:border-slate-700 flex justify-end">
               <Button 
                 onClick={() => {
                   setIsAIHelperOpen(false)

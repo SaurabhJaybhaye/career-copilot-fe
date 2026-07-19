@@ -86,14 +86,14 @@ export const Settings: React.FC = () => {
     <div className="space-y-6">
       <div className="pb-5 border-b border-slate-200 dark:border-slate-700 text-left">
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Settings</h1>
-        <p className="text-slate-550 dark:text-slate-400 mt-1">Configure profile settings, notifications, and application preferences.</p>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Configure profile settings, notifications, and application preferences.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card details */}
         <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4 h-fit">
-          <h3 className="text-lg font-bold text-slate-955 dark:text-white flex items-center">
-            <UserIcon className="mr-2 h-5 w-5 text-violet-550" />
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center">
+            <UserIcon className="mr-2 h-5 w-5 text-violet-650" />
             Profile Details
           </h3>
           
@@ -134,20 +134,20 @@ export const Settings: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* UI Preferences Card */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
-            <h3 className="text-lg font-bold text-slate-955 dark:text-white flex items-center">
-              <Sun className="mr-2 h-5 w-5 text-violet-550" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center">
+              <Sun className="mr-2 h-5 w-5 text-violet-650" />
               UI Preferences
             </h3>
             <div className="pt-2">
               <button 
                 onClick={toggleTheme}
                 disabled={updateProfileMutation.isPending}
-                className="w-full flex items-center justify-between p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-750 transition duration-200 cursor-pointer disabled:opacity-50"
+                className="w-full flex items-center justify-between p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition duration-200 cursor-pointer disabled:opacity-50"
               >
                 <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                   Theme: {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
                 </span>
-                <div className="p-2 bg-slate-100 dark:bg-slate-700 text-slate-655 dark:text-slate-300 rounded-lg">
+                <div className="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg">
                   {theme === 'light' ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
                 </div>
               </button>
@@ -156,8 +156,8 @@ export const Settings: React.FC = () => {
 
           {/* Notifications Card */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-955 dark:text-white flex items-center border-b border-slate-100 dark:border-slate-700 pb-3">
-              <Bell className="mr-2 h-5 w-5 text-violet-550" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center border-b border-slate-100 dark:border-slate-700 pb-3">
+              <Bell className="mr-2 h-5 w-5 text-violet-650" />
               Notification Settings
             </h3>
             

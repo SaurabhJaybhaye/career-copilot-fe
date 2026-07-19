@@ -112,7 +112,7 @@ export const DesignSystem: React.FC = () => {
       header: 'Match Score',
       accessor: (row) => (
         <div className="flex items-center space-x-2">
-          <span className={`font-bold ${row.matchScore >= 90 ? 'text-emerald-600 dark:text-emerald-450' : 'text-indigo-600 dark:text-indigo-400'}`}>
+          <span className={`font-bold ${row.matchScore >= 90 ? 'text-emerald-600 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
             {row.matchScore}%
           </span>
           <div className="w-16 bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
@@ -157,7 +157,7 @@ export const DesignSystem: React.FC = () => {
       <div className="pb-6 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="text-left">
           <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Design System Playground</h1>
-          <p className="text-slate-550 dark:text-slate-400 mt-1">Review the application architecture theme patterns, styles, components, and responsive cards.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Review the application architecture theme patterns, styles, components, and responsive cards.</p>
         </div>
         <Button 
           onClick={triggerToast}
@@ -429,7 +429,7 @@ export const DesignSystem: React.FC = () => {
         }
       >
         <div className="space-y-3">
-          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-350 border border-emerald-100 dark:border-emerald-900/30 rounded-xl text-xs leading-relaxed">
+          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/30 rounded-xl text-xs leading-relaxed">
             Successfully analyzed resume keyword tags! High matching score (89%) aligned.
           </div>
           <p>The parser has successfully extracted 15 technology tags and matched them against your active job profiles. Recommended outreach template generated.</p>

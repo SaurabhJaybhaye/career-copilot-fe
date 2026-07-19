@@ -374,7 +374,7 @@ export const AICopilot: React.FC = () => {
             <Sparkles className="h-8 w-8 text-violet-600 animate-pulse" />
             AI Copilot Engine
           </h1>
-          <p className="text-slate-550 dark:text-slate-400 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             Leverage advanced semantic matching to optimize your applications, tailor resumes, draft cover letters, and build networking messages.
           </p>
         </div>
@@ -430,7 +430,7 @@ export const AICopilot: React.FC = () => {
             <span className="flex items-center gap-1">
               <FileText className="h-3.5 w-3.5" /> Source: {activeResume.title}
             </span>
-            <span className="text-slate-300 dark:text-slate-650">|</span>
+            <span className="text-slate-300 dark:text-slate-700">|</span>
             <span className="flex items-center gap-1">
               <Briefcase className="h-3.5 w-3.5" /> Target: {activeJob.title} ({activeJob.company})
             </span>
@@ -440,17 +440,17 @@ export const AICopilot: React.FC = () => {
 
       {/* Main Feature Container */}
       {!isSelectionActive ? (
-        <div className="bg-slate-50 dark:bg-slate-900/40 p-12 text-center rounded-2xl border border-slate-150 dark:border-slate-800 space-y-4 max-w-lg mx-auto">
-          <Sparkles className="h-12 w-12 text-slate-300 dark:text-slate-750 mx-auto" />
+        <div className="bg-slate-50 dark:bg-slate-900/40 p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-w-lg mx-auto">
+          <Sparkles className="h-12 w-12 text-slate-300 dark:text-slate-700 mx-auto" />
           <h4 className="font-extrabold text-slate-800 dark:text-slate-200 text-base">Select Your Inputs</h4>
-          <p className="text-xs text-slate-450 dark:text-slate-500 leading-relaxed">
+          <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
             Please pick a resume profile and a target job from the configuration card above to analyze skill gaps, generate cover letters, and tailor your content.
           </p>
         </div>
       ) : (
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
           {/* Tabs header */}
-          <div className="bg-slate-50/50 dark:bg-slate-900/30 border-b border-slate-150 dark:border-slate-700 px-6 flex overflow-x-auto gap-4">
+          <div className="bg-slate-50/50 dark:bg-slate-900/30 border-b border-slate-200 dark:border-slate-700 px-6 flex overflow-x-auto gap-4">
             <button
               onClick={() => setActiveTab('skill-gap')}
               className={`py-3.5 px-1 font-bold text-xs uppercase tracking-wider border-b-2 transition duration-200 cursor-pointer whitespace-nowrap ${
@@ -521,7 +521,7 @@ export const AICopilot: React.FC = () => {
                     <p className="text-xs text-slate-500 font-semibold">Running deep semantic model matching...</p>
                   </div>
                 ) : skillGapError ? (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-750 text-xs flex items-start gap-2.5">
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs flex items-start gap-2.5">
                     <AlertCircle className="h-4.5 w-4.5 flex-shrink-0 text-red-650" />
                     <div>
                       <span className="font-bold">Error analyzing match gap.</span>
@@ -536,7 +536,7 @@ export const AICopilot: React.FC = () => {
                         <div className="relative flex items-center justify-center">
                           <svg className="w-24 h-24 transform -rotate-90">
                             <circle
-                              className="text-slate-150 dark:text-slate-700"
+                              className="text-slate-200 dark:text-slate-700"
                               strokeWidth="8"
                               stroke="currentColor"
                               fill="transparent"
@@ -561,7 +561,7 @@ export const AICopilot: React.FC = () => {
                             {skillGapResponse.score}%
                           </span>
                         </div>
-                        <span className="text-xxs font-extrabold tracking-wider uppercase text-slate-450 mt-3">Match Score</span>
+                        <span className="text-xxs font-extrabold tracking-wider uppercase text-slate-400 mt-3">Match Score</span>
                         <Badge 
                           variant={skillGapResponse.score >= 80 ? 'offer' : 'applied'} 
                           className="mt-2 text-[10px]"
@@ -573,7 +573,7 @@ export const AICopilot: React.FC = () => {
                       <div className="md:col-span-3 space-y-4">
                         {/* Matched Skills */}
                         <div className="space-y-2">
-                          <h5 className="text-xs font-bold text-slate-700 dark:text-slate-350 flex items-center gap-1.5">
+                          <h5 className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                             <Check className="h-4 w-4 text-emerald-500" />
                             Matched Skills ({skillGapResponse.matchedSkills.length})
                           </h5>
@@ -585,14 +585,14 @@ export const AICopilot: React.FC = () => {
                                 </Badge>
                               ))
                             ) : (
-                              <span className="text-xs text-slate-450 italic">No skills overlap identified.</span>
+                              <span className="text-xs text-slate-400 italic">No skills overlap identified.</span>
                             )}
                           </div>
                         </div>
 
                         {/* Missing Skills */}
                         <div className="space-y-2">
-                          <h5 className="text-xs font-bold text-slate-700 dark:text-slate-350 flex items-center gap-1.5">
+                          <h5 className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                             <AlertCircle className="h-4 w-4 text-amber-500" />
                             Missing Skills ({skillGapResponse.missingSkills.length})
                           </h5>
@@ -604,7 +604,7 @@ export const AICopilot: React.FC = () => {
                                 </Badge>
                               ))
                             ) : (
-                              <span className="text-xs text-slate-450 italic">Perfect matching! No gaps found.</span>
+                              <span className="text-xs text-slate-400 italic">Perfect matching! No gaps found.</span>
                             )}
                           </div>
                         </div>
@@ -620,7 +620,7 @@ export const AICopilot: React.FC = () => {
                       <ul className="space-y-2.5">
                         {skillGapResponse.recommendations && skillGapResponse.recommendations.length > 0 ? (
                           skillGapResponse.recommendations.map((rec: string, i: number) => (
-                            <li key={i} className="text-xs font-semibold text-slate-600 dark:text-slate-350 flex items-start gap-2">
+                            <li key={i} className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-start gap-2">
                               <span className="h-4.5 w-4.5 rounded-full bg-violet-50 dark:bg-violet-950/40 text-violet-650 dark:text-violet-400 font-extrabold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                                 {i + 1}
                               </span>
@@ -628,7 +628,7 @@ export const AICopilot: React.FC = () => {
                             </li>
                           ))
                         ) : (
-                          <span className="text-xs text-slate-450 italic">Everything is in alignment! No adjustments recommended.</span>
+                          <span className="text-xs text-slate-400 italic">Everything is in alignment! No adjustments recommended.</span>
                         )}
                       </ul>
                     </div>
@@ -637,7 +637,7 @@ export const AICopilot: React.FC = () => {
                   <div className="py-12 text-center text-slate-400">
                     <Check className="h-10 w-10 mx-auto text-slate-300 mb-2" />
                     <p className="text-xs font-bold">Diagnostics ready to run.</p>
-                    <p className="text-xxs text-slate-450 mt-1">Select refresh or configure contexts to begin analysis.</p>
+                    <p className="text-xxs text-slate-400 mt-1">Select refresh or configure contexts to begin analysis.</p>
                   </div>
                 )}
               </div>
@@ -648,7 +648,7 @@ export const AICopilot: React.FC = () => {
               <div className="space-y-6 flex-1 flex flex-col">
                 <div>
                   <h4 className="font-extrabold text-slate-900 dark:text-white text-base">Optimize CV Keywords with AI</h4>
-                  <p className="text-slate-550 dark:text-slate-400 text-xs mt-0.5">
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                     Generate customized wording adjustments that target the specific hiring constraints of this role.
                   </p>
                 </div>
@@ -657,7 +657,7 @@ export const AICopilot: React.FC = () => {
                   {/* Prompt controls */}
                   <div className="bg-slate-50/50 dark:bg-slate-900/10 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between space-y-4">
                     <div className="space-y-4">
-                      <h5 className="text-xs font-black uppercase tracking-wider text-slate-450">Tailor Parameters</h5>
+                      <h5 className="text-xs font-black uppercase tracking-wider text-slate-400">Tailor Parameters</h5>
                       
                       <TextArea
                         label="Special Wording / Focus Directives"
@@ -687,15 +687,15 @@ export const AICopilot: React.FC = () => {
                       <div className="flex-1 flex flex-col space-y-3">
                         <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-black uppercase tracking-wider text-slate-450">Draft Result</span>
+                            <span className="text-xs font-black uppercase tracking-wider text-slate-400">Draft Result</span>
                             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/50 p-0.5 rounded-lg border border-slate-200/50 dark:border-slate-700">
                               <button
                                 type="button"
                                 onClick={() => setTailorViewMode('preview')}
                                 className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
                                   tailorViewMode === 'preview'
-                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                                 }`}
                               >
                                 Preview
@@ -705,8 +705,8 @@ export const AICopilot: React.FC = () => {
                                 onClick={() => setTailorViewMode('edit')}
                                 className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
                                   tailorViewMode === 'edit'
-                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                                 }`}
                               >
                                 Edit Source
@@ -754,19 +754,19 @@ export const AICopilot: React.FC = () => {
                             <span className="font-extrabold text-slate-700 dark:text-slate-300">Parsed Tags to Register:</span>
                             {tailoredSkills.length > 0 && (
                               <div className="flex flex-wrap items-center gap-1 mt-1">
-                                <span className="font-semibold text-slate-450 mr-1">Skills:</span>
+                                <span className="font-semibold text-slate-400 mr-1">Skills:</span>
                                 {tailoredSkills.map((s, idx) => <Badge key={idx} variant="offer" className="text-[10px]">{s}</Badge>)}
                               </div>
                             )}
                             {tailoredTech.length > 0 && (
                               <div className="flex flex-wrap items-center gap-1 mt-1">
-                                <span className="font-semibold text-slate-450 mr-1">Tech:</span>
+                                <span className="font-semibold text-slate-400 mr-1">Tech:</span>
                                 {tailoredTech.map((t, idx) => <Badge key={idx} variant="interview" className="text-[10px]">{t}</Badge>)}
                               </div>
                             )}
                             {tailoredDomains.length > 0 && (
                               <div className="flex flex-wrap items-center gap-1 mt-1">
-                                <span className="font-semibold text-slate-450 mr-1">Domains:</span>
+                                <span className="font-semibold text-slate-400 mr-1">Domains:</span>
                                 {tailoredDomains.map((d, idx) => <Badge key={idx} variant="applied" className="text-[10px]">{d}</Badge>)}
                               </div>
                             )}
@@ -774,10 +774,10 @@ export const AICopilot: React.FC = () => {
                         )}
                       </div>
                     ) : (
-                      <div className="flex-1 border border-dashed border-slate-200 dark:border-slate-750 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-slate-50/20">
+                      <div className="flex-1 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-slate-50/20">
                         <FileText className="h-10 w-10 text-slate-300 dark:text-slate-700 mb-2.5" />
-                        <span className="text-xs font-bold text-slate-550 dark:text-slate-400">No Custom Draft Created Yet</span>
-                        <p className="text-[11px] text-slate-450 dark:text-slate-500 max-w-sm mt-1">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">No Custom Draft Created Yet</span>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-sm mt-1">
                           Click "Draft Tailored CV" on the left panel to execute keywords alignment and generate updated copy.
                         </p>
                       </div>
@@ -792,7 +792,7 @@ export const AICopilot: React.FC = () => {
               <div className="space-y-6 flex-1 flex flex-col">
                 <div>
                   <h4 className="font-extrabold text-slate-900 dark:text-white text-base">Write Professional Cover Letter</h4>
-                  <p className="text-slate-550 dark:text-slate-400 text-xs mt-0.5">
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                     Generates a cohesive letter matching your experience metrics to the primary objectives of the employer.
                   </p>
                 </div>
@@ -801,7 +801,7 @@ export const AICopilot: React.FC = () => {
                   {/* Inputs */}
                   <div className="bg-slate-50/50 dark:bg-slate-900/10 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between space-y-4">
                     <div className="space-y-4">
-                      <h5 className="text-xs font-black uppercase tracking-wider text-slate-450">Generation Constraints</h5>
+                      <h5 className="text-xs font-black uppercase tracking-wider text-slate-400">Generation Constraints</h5>
                       
                       <TextArea
                         label="Special Tone / Format Instructions"
@@ -831,15 +831,15 @@ export const AICopilot: React.FC = () => {
                       <div className="flex-1 flex flex-col space-y-3">
                         <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-black uppercase tracking-wider text-slate-450">Generated Letter</span>
+                            <span className="text-xs font-black uppercase tracking-wider text-slate-400">Generated Letter</span>
                             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/50 p-0.5 rounded-lg border border-slate-200/50 dark:border-slate-700">
                               <button
                                 type="button"
                                 onClick={() => setCoverLetterViewMode('preview')}
                                 className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
                                   coverLetterViewMode === 'preview'
-                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                                 }`}
                               >
                                 Preview
@@ -849,8 +849,8 @@ export const AICopilot: React.FC = () => {
                                 onClick={() => setCoverLetterViewMode('edit')}
                                 className={`px-2.5 py-0.5 text-[10px] font-bold rounded-md transition duration-150 cursor-pointer ${
                                   coverLetterViewMode === 'edit'
-                                    ? 'bg-white dark:bg-slate-800 text-violet-650 dark:text-violet-400 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                                    ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                                 }`}
                               >
                                 Edit Source
@@ -879,7 +879,7 @@ export const AICopilot: React.FC = () => {
                         </div>
                         {coverLetterViewMode === 'edit' ? (
                           <TextArea
-                            className="font-sans text-xs flex-1 min-h-[300px] leading-relaxed bg-slate-905/5 dark:bg-slate-900/60"
+                            className="font-sans text-xs flex-1 min-h-[300px] leading-relaxed bg-slate-900/5 dark:bg-slate-900/60"
                             value={coverLetterText}
                             onChange={(e) => setCoverLetterText(e.target.value)}
                             rows={14}
@@ -892,10 +892,10 @@ export const AICopilot: React.FC = () => {
                         )}
                       </div>
                     ) : (
-                      <div className="flex-1 border border-dashed border-slate-200 dark:border-slate-750 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-slate-50/20">
+                      <div className="flex-1 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-slate-50/20">
                         <Mail className="h-10 w-10 text-slate-300 dark:text-slate-700 mb-2.5" />
-                        <span className="text-xs font-bold text-slate-550 dark:text-slate-400">No Cover Letter Generated</span>
-                        <p className="text-[11px] text-slate-450 dark:text-slate-500 max-w-sm mt-1">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">No Cover Letter Generated</span>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-sm mt-1">
                           Configure specifications on the left to output a personalized application cover letter.
                         </p>
                       </div>
@@ -904,13 +904,13 @@ export const AICopilot: React.FC = () => {
                 </div>
 
                 {/* Saved Cover Letters Section */}
-                <div className="border-t border-slate-150 dark:border-slate-700 pt-8 space-y-4">
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-8 space-y-4">
                   <div className="pb-2 text-left">
                     <h3 className="text-lg font-bold text-slate-950 dark:text-white flex items-center">
-                      <FileText className="mr-2 h-5 w-5 text-violet-650" />
+                      <FileText className="mr-2 h-5 w-5 text-violet-600" />
                       Saved Cover Letters
                     </h3>
-                    <p className="text-slate-550 dark:text-slate-400 text-xs mt-0.5">
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                       Review, inspect, or delete your saved cover letters generated by the AI Copilot.
                     </p>
                   </div>
@@ -921,10 +921,10 @@ export const AICopilot: React.FC = () => {
                       <p className="text-[11px] text-slate-500 font-semibold">Retrieving cover letters...</p>
                     </div>
                   ) : savedCoverLetters.length === 0 ? (
-                    <div className="py-8 text-center text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-750 rounded-2xl bg-slate-50/20">
-                      <Mail className="h-8 w-8 mx-auto text-slate-350 dark:text-slate-700 mb-2" />
+                    <div className="py-8 text-center text-slate-400 dark:text-slate-500 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50/20">
+                      <Mail className="h-8 w-8 mx-auto text-slate-300 dark:text-slate-700 mb-2" />
                       <p className="text-xs font-bold">No saved cover letters</p>
-                      <p className="text-xxs text-slate-450 mt-1">Generate a cover letter above and save it to the manager.</p>
+                      <p className="text-xxs text-slate-400 mt-1">Generate a cover letter above and save it to the manager.</p>
                     </div>
                   ) : (
                     <DataTable
@@ -948,11 +948,11 @@ export const AICopilot: React.FC = () => {
                           accessor: (row) => {
                             const job = jobs.find(j => (j._id || j.id) === row.jobId)
                             return job ? (
-                              <span className="font-semibold text-slate-750 dark:text-slate-300">
+                              <span className="font-semibold text-slate-700 dark:text-slate-300">
                                 {job.title} at {job.company}
                               </span>
                             ) : (
-                              <span className="text-slate-450 italic">Unknown Job context</span>
+                              <span className="text-slate-400 italic">Unknown Job context</span>
                             )
                           }
                         },
@@ -987,7 +987,7 @@ export const AICopilot: React.FC = () => {
                                 href={`http://127.0.0.1:5000${row.fileUrl}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center p-1.5 bg-slate-100 dark:bg-slate-750 hover:bg-slate-200 dark:hover:bg-slate-650 text-slate-750 dark:text-slate-200 rounded-lg text-xs font-bold transition select-none disabled:opacity-50"
+                                className="inline-flex items-center p-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold transition select-none disabled:opacity-50"
                                 title="Download PDF"
                               >
                                 <Download className="h-4 w-4" />
@@ -1021,7 +1021,7 @@ export const AICopilot: React.FC = () => {
               <div className="space-y-6 flex-1 flex flex-col">
                 <div>
                   <h4 className="font-extrabold text-slate-900 dark:text-white text-base">Generate Networking Referral Outreach</h4>
-                  <p className="text-slate-550 dark:text-slate-400 text-xs mt-0.5">
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                     Draft outreach messages requesting a warm referral from employee contacts.
                   </p>
                 </div>
@@ -1030,7 +1030,7 @@ export const AICopilot: React.FC = () => {
                   {/* Inputs */}
                   <div className="bg-slate-50/50 dark:bg-slate-900/10 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between space-y-4">
                     <div className="space-y-4">
-                      <h5 className="text-xs font-black uppercase tracking-wider text-slate-450">Referrer Context</h5>
+                      <h5 className="text-xs font-black uppercase tracking-wider text-slate-400">Referrer Context</h5>
                       
                       <Input
                         label="Recipient Name"
@@ -1078,7 +1078,7 @@ export const AICopilot: React.FC = () => {
                     {outreachText ? (
                       <div className="flex-1 flex flex-col space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-black uppercase tracking-wider text-slate-450 flex items-center gap-1.5">
+                          <span className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                             {outreachPlatform === 'LinkedIn' && <Linkedin className="h-4 w-4 text-blue-600" />}
                             {outreachPlatform === 'Email' && <Mail className="h-4 w-4 text-red-500" />}
                             {outreachPlatform === 'Cold Message' && <MessageSquare className="h-4 w-4 text-violet-500" />}
@@ -1094,17 +1094,17 @@ export const AICopilot: React.FC = () => {
                           </Button>
                         </div>
                         <TextArea
-                          className="font-sans text-xs flex-1 min-h-[300px] leading-relaxed bg-slate-905/5 dark:bg-slate-900/60"
+                          className="font-sans text-xs flex-1 min-h-[300px] leading-relaxed bg-slate-900/5 dark:bg-slate-900/60"
                           value={outreachText}
                           onChange={(e) => setOutreachText(e.target.value)}
                           rows={14}
                         />
                       </div>
                     ) : (
-                      <div className="flex-1 border border-dashed border-slate-200 dark:border-slate-750 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-slate-50/20">
+                      <div className="flex-1 border border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-slate-50/20">
                         <MessageSquare className="h-10 w-10 text-slate-300 dark:text-slate-700 mb-2.5" />
-                        <span className="text-xs font-bold text-slate-550 dark:text-slate-400">No Outreach Drafted</span>
-                        <p className="text-[11px] text-slate-450 dark:text-slate-500 max-w-sm mt-1">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">No Outreach Drafted</span>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-sm mt-1">
                           Define your recipient context and click "Draft Message" to create a high-conversion networking pitch.
                         </p>
                       </div>
@@ -1135,7 +1135,7 @@ export const AICopilot: React.FC = () => {
             required
             disabled={saveTailoredResumeMutation.isPending}
           />
-          <p className="text-slate-450 text-[11px]">
+          <p className="text-slate-400 text-[11px]">
             Saving will register this tailored CV as a new entry in your **Resume Manager**. The parsed skills, technologies, and industry domains identified by the AI will be associated with the new document.
           </p>
         </form>
@@ -1158,7 +1158,7 @@ export const AICopilot: React.FC = () => {
             required
             disabled={saveCoverLetterMutation.isPending}
           />
-          <p className="text-slate-450 text-[11px]">
+          <p className="text-slate-400 text-[11px]">
             Saving will register this cover letter under your saved templates and compile it as a print-optimized PDF document on disk.
           </p>
         </form>
@@ -1174,7 +1174,7 @@ export const AICopilot: React.FC = () => {
         {activeCoverLetter ? (
           <div className="space-y-6 text-left">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
-              <span className="text-xs text-slate-450 dark:text-slate-400">
+              <span className="text-xs text-slate-400 dark:text-slate-400">
                 Created: {new Date(activeCoverLetter.createdAt).toLocaleString()}
               </span>
               <a
@@ -1194,7 +1194,7 @@ export const AICopilot: React.FC = () => {
               rows={14}
             />
 
-            <div className="pt-4 border-t border-slate-150 dark:border-slate-700 flex justify-end">
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
               <Button
                 variant="secondary"
                 onClick={() => handleCopyText(activeCoverLetter.content, () => {})}

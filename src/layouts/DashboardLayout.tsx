@@ -148,14 +148,14 @@ export const DashboardLayout: React.FC = () => {
             <Menu className="h-6 w-6" />
           </button>
           
-          <div className="hidden md:block text-sm text-slate-550 dark:text-slate-400 font-medium">
+          <div className="hidden md:block text-sm text-slate-500 dark:text-slate-400 font-medium">
             Welcome back to Career Copilot!
           </div>
 
           <div className="flex items-center space-x-4">
             <Link 
               to="/settings"
-              className="flex items-center space-x-2 p-1.5 rounded-lg text-slate-600 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+              className="flex items-center space-x-2 p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
             >
               <User className="h-5 w-5" />
               <span className="text-sm font-medium hidden sm:inline">Profile</span>

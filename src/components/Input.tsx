@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Eye, EyeOff, Search } from 'lucide-react'
 
 // Common styling classes for inputs (standard Tailwind dark theme colors)
-const inputBaseClasses = 'appearance-none block w-full px-4 py-3 border border-slate-300 dark:border-slate-750 rounded-xl placeholder-slate-400 text-slate-900 dark:text-white bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200 text-sm shadow-sm disabled:bg-slate-100 dark:disabled:bg-slate-900 disabled:text-slate-400 dark:disabled:text-slate-500 disabled:cursor-not-allowed'
+const inputBaseClasses = 'appearance-none block w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl placeholder-slate-400 text-slate-900 dark:text-white bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200 text-sm shadow-sm disabled:bg-slate-100 dark:disabled:bg-slate-900 disabled:text-slate-400 dark:disabled:text-slate-500 disabled:cursor-not-allowed'
 const errorClasses = 'border-red-500 focus:ring-red-500 dark:border-red-500'
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -34,7 +34,7 @@ export const Input: React.FC<InputProps> = React.forwardRef<HTMLInputElement, In
           <p className="text-xs font-semibold text-red-650 dark:text-red-400">{error}</p>
         )}
         {!error && helperText && (
-          <p className="text-xs text-slate-500 dark:text-slate-405">{helperText}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
         )}
       </div>
     )
@@ -73,7 +73,7 @@ export const PasswordInput: React.FC<InputProps> = React.forwardRef<HTMLInputEle
             type="button"
             onClick={togglePasswordVisibility}
             disabled={disabled}
-            className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none p-1 rounded-md"
+            className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none p-1 rounded-md"
             tabIndex={-1}
           >
             {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
@@ -83,7 +83,7 @@ export const PasswordInput: React.FC<InputProps> = React.forwardRef<HTMLInputEle
           <p className="text-xs font-semibold text-red-650 dark:text-red-400">{error}</p>
         )}
         {!error && helperText && (
-          <p className="text-xs text-slate-500 dark:text-slate-405">{helperText}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
         )}
       </div>
     )
@@ -118,7 +118,7 @@ export const SearchInput: React.FC<InputProps> = React.forwardRef<HTMLInputEleme
           <p className="text-xs font-semibold text-red-650 dark:text-red-400">{error}</p>
         )}
         {!error && helperText && (
-          <p className="text-xs text-slate-500 dark:text-slate-405">{helperText}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
         )}
       </div>
     )
@@ -157,7 +157,7 @@ export const TextArea: React.FC<TextAreaProps> = React.forwardRef<HTMLTextAreaEl
           <p className="text-xs font-semibold text-red-650 dark:text-red-400">{error}</p>
         )}
         {!error && helperText && (
-          <p className="text-xs text-slate-500 dark:text-slate-405">{helperText}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
         )}
       </div>
     )

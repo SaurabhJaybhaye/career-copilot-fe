@@ -64,13 +64,13 @@ export const Analytics: React.FC = () => {
 
   return (
     <div className="space-y-6 text-left">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-205 dark:border-slate-700 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-200 dark:border-slate-700 gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center">
             <BarChart3 className="mr-2.5 h-8 w-8 text-violet-650" />
             Analytics & Conversions
           </h1>
-          <p className="text-slate-550 dark:text-slate-400 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             Analyze your job hunt metrics, resume response conversions, and platform portals success rates.
           </p>
         </div>
@@ -87,7 +87,7 @@ export const Analytics: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
             <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
               <div className="space-y-1">
-                <span className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Total Applications
                 </span>
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-none">
@@ -101,7 +101,7 @@ export const Analytics: React.FC = () => {
 
             <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
               <div className="space-y-1">
-                <span className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Interview Conversion
                 </span>
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-none">
@@ -115,7 +115,7 @@ export const Analytics: React.FC = () => {
 
             <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
               <div className="space-y-1">
-                <span className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Success Offer Rate
                 </span>
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-none">
@@ -129,7 +129,7 @@ export const Analytics: React.FC = () => {
 
             <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
               <div className="space-y-1">
-                <span className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider">
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Total Job Offers
                 </span>
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-none">
@@ -146,13 +146,13 @@ export const Analytics: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* SVG Trend Area */}
             <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm lg:col-span-2 flex flex-col justify-between min-h-[360px]">
-              <h3 className="font-extrabold text-slate-805 dark:text-slate-200 text-sm flex items-center mb-3">
+              <h3 className="font-extrabold text-slate-800 dark:text-slate-200 text-sm flex items-center mb-3">
                 <Calendar className="mr-2 h-4 w-4 text-violet-650" />
                 Monthly Application Trends
               </h3>
               
               {monthlyTrends.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-slate-450 py-10">
+                <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
                   <TrendingUp className="h-10 w-10 text-slate-300 mb-2" />
                   <p className="text-xs font-semibold">Track applications across multiple months to generate line trend paths.</p>
                 </div>
@@ -207,7 +207,7 @@ export const Analytics: React.FC = () => {
                           x={pt.x}
                           y={pt.y - 8}
                           textAnchor="middle"
-                          className="text-[9px] font-black fill-slate-800 dark:fill-slate-350"
+                          className="text-[9px] font-black fill-slate-800 dark:fill-slate-300"
                         >
                           {pt.val}
                         </text>
@@ -229,7 +229,7 @@ export const Analytics: React.FC = () => {
                       y1={svgHeight - paddingY} 
                       x2={svgWidth - paddingX} 
                       y2={svgHeight - paddingY} 
-                      className="stroke-slate-205 dark:stroke-slate-700/80 stroke-1.5"
+                      className="stroke-slate-200 dark:stroke-slate-700/80 stroke-1.5"
                     />
                   </svg>
                 </div>
@@ -238,13 +238,13 @@ export const Analytics: React.FC = () => {
 
             {/* Stage Progress conversion Funnel */}
             <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between min-h-[360px]">
-              <h3 className="font-extrabold text-slate-805 dark:text-slate-200 text-sm flex items-center mb-3">
+              <h3 className="font-extrabold text-slate-800 dark:text-slate-200 text-sm flex items-center mb-3">
                 <TrendingUp className="mr-2 h-4 w-4 text-violet-650" />
                 Outreach Funnel
               </h3>
 
               {totalApps === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-slate-450 py-10">
+                <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
                   <BarChart3 className="h-10 w-10 text-slate-300 mb-2" />
                   <p className="text-xs font-semibold">Funnel renders automatically after applications are registered.</p>
                 </div>
@@ -258,11 +258,11 @@ export const Analytics: React.FC = () => {
 
                   {/* Funnel conversion Rate connector 1 */}
                   <div className="flex flex-col items-center -my-2.5">
-                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-750" />
+                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-700" />
                     <span className="bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/50 text-violet-600 dark:text-violet-400 text-[10px] font-black px-2 py-0.5 rounded-full my-0.5">
                       {interviewRate}% screening rate
                     </span>
-                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-750" />
+                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-700" />
                   </div>
 
                   {/* Interviewing Box */}
@@ -275,11 +275,11 @@ export const Analytics: React.FC = () => {
 
                   {/* Funnel conversion Rate connector 2 */}
                   <div className="flex flex-col items-center -my-2.5">
-                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-750" />
+                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-700" />
                     <span className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full my-0.5">
                       {conversionStats?.rates?.interviewToOfferRate || 0}% interview success
                     </span>
-                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-750" />
+                    <div className="h-6 w-0.5 bg-slate-200 dark:bg-slate-700" />
                   </div>
 
                   {/* Offered Box */}
@@ -296,13 +296,13 @@ export const Analytics: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* SVG platform sources rails */}
             <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between min-h-[300px]">
-              <h3 className="font-extrabold text-slate-805 dark:text-slate-200 text-sm flex items-center mb-3">
+              <h3 className="font-extrabold text-slate-800 dark:text-slate-200 text-sm flex items-center mb-3">
                 <Compass className="mr-2 h-4 w-4 text-violet-650" />
                 Applications by Platform
               </h3>
 
               {sourceStats.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-slate-450 py-10">
+                <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
                   <Compass className="h-10 w-10 text-slate-300 mb-2" />
                   <p className="text-xs font-semibold">No platform data. Link a posting URL in jobs matches first.</p>
                 </div>
@@ -314,12 +314,12 @@ export const Analytics: React.FC = () => {
 
                     return (
                       <div key={idx} className="space-y-1 text-left">
-                        <div className="flex items-center justify-between text-xs font-bold text-slate-750 dark:text-slate-350">
+                        <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
                           <span>{stat.source}</span>
                           <span>{stat.count} apps</span>
                         </div>
                         {/* Horizontal rail bar */}
-                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-750 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                           <div 
                             style={{ width: `${percent}%` }}
                             className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500 rounded-full" 
@@ -334,13 +334,13 @@ export const Analytics: React.FC = () => {
 
             {/* Resume conversions matrix */}
             <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm lg:col-span-2 flex flex-col justify-between min-h-[300px]">
-              <h3 className="font-extrabold text-slate-805 dark:text-slate-200 text-sm flex items-center mb-3">
+              <h3 className="font-extrabold text-slate-800 dark:text-slate-200 text-sm flex items-center mb-3">
                 <FileText className="mr-2 h-4 w-4 text-violet-650" />
                 Resume Performance Leaderboard
               </h3>
 
               {resumeStats.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-slate-450 py-10">
+                <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
                   <FileText className="h-10 w-10 text-slate-300 mb-2" />
                   <p className="text-xs font-semibold">Verify resume stats by attaching them when creating application trackers.</p>
                 </div>

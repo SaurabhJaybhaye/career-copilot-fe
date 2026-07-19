@@ -101,7 +101,7 @@ export const Login: React.FC = () => {
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Sign in to your account
         </h2>
-        <p className="mt-2 text-sm text-slate-655 dark:text-slate-400">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           Or{' '}
           <Link to="/signup" className="font-semibold text-violet-600 hover:text-violet-500 dark:text-violet-400">
             create a new account
@@ -123,7 +123,7 @@ export const Login: React.FC = () => {
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="block text-sm font-bold text-slate-755 dark:text-slate-205">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">
               Password
             </label>
             <Link
@@ -159,7 +159,7 @@ export const Login: React.FC = () => {
       <div className="mt-6 text-center border-t border-slate-100 dark:border-slate-700/60 pt-4">
         <button
           onClick={handleBypass}
-          className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 underline cursor-pointer"
+          className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 underline cursor-pointer"
         >
           Developer Bypass (Simulate Login)
         </button>

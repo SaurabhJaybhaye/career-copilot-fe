@@ -200,7 +200,7 @@ export const Jobs: React.FC = () => {
     {
       header: 'Location',
       accessor: (row: Job) => (
-        <span className="text-slate-600 dark:text-slate-350 text-xs font-bold">
+        <span className="text-slate-600 dark:text-slate-300 text-xs font-bold">
           {row.location || 'Remote'}
         </span>
       ),
@@ -210,7 +210,7 @@ export const Jobs: React.FC = () => {
     {
       header: 'Salary Range',
       accessor: (row: Job) => (
-        <span className="text-slate-600 dark:text-slate-350 text-xs font-semibold">
+        <span className="text-slate-600 dark:text-slate-300 text-xs font-semibold">
           {row.salary || 'Not specified'}
         </span>
       )
@@ -318,7 +318,7 @@ export const Jobs: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-200 dark:border-slate-700 gap-4">
         <div className="text-left">
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Job Matches</h1>
-          <p className="text-slate-550 dark:text-slate-400 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             Register target job postings to automatically parse requirements and run match diagnostics against your CVs.
           </p>
         </div>
@@ -540,7 +540,7 @@ export const Jobs: React.FC = () => {
 
             {/* Resume Selection Cards Grid */}
             <div className="space-y-2">
-              <h4 className="text-xs font-extrabold text-slate-550 dark:text-slate-400 uppercase tracking-wider">
+              <h4 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Select Tested Resume
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -568,7 +568,7 @@ export const Jobs: React.FC = () => {
                       </div>
 
                       <div className="mt-2.5 flex items-center justify-between">
-                        <span className="text-[10px] text-slate-450 dark:text-slate-400 font-semibold">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-400 font-semibold">
                           Recommendation:
                         </span>
                         <span className={`text-[10px] font-extrabold ${isRecommended ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`}>
@@ -595,7 +595,7 @@ export const Jobs: React.FC = () => {
 
               {/* Matched Skills */}
               <div className="space-y-1.5">
-                <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-450 uppercase tracking-wider flex items-center">
+                <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
                   <Check className="mr-1 h-3.5 w-3.5 text-emerald-500" /> Matched Skills ({selectedMatch.matchedSkills.length})
                 </h5>
                 <div className="flex flex-wrap gap-1">
@@ -606,32 +606,32 @@ export const Jobs: React.FC = () => {
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-xs text-slate-450 italic">No skills matched.</span>
+                    <span className="text-xs text-slate-400 italic">No skills matched.</span>
                   )}
                 </div>
               </div>
 
               {/* Missing Skills */}
               <div className="space-y-1.5">
-                <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-450 uppercase tracking-wider flex items-center">
+                <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
                   <AlertCircle className="mr-1 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" /> Missing Skills ({selectedMatch.missingSkills.length})
                 </h5>
                 <div className="flex flex-wrap gap-1">
                   {selectedMatch.missingSkills.length > 0 ? (
                     selectedMatch.missingSkills.map((skill, idx) => (
-                      <Badge key={idx} variant="interview" className="!text-[10px] !py-0.5 !px-2 bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-350 border-none">
+                      <Badge key={idx} variant="interview" className="!text-[10px] !py-0.5 !px-2 bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border-none">
                         {skill}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-xs text-slate-450 italic">No missing skills detected! Perfect match.</span>
+                    <span className="text-xs text-slate-400 italic">No missing skills detected! Perfect match.</span>
                   )}
                 </div>
               </div>
             </div>
 
             {/* AI Action */}
-            <div className="pt-4 border-t border-slate-150 dark:border-slate-700 flex justify-end">
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
               <Button
                 variant="primary"
                 onClick={() => {
@@ -644,7 +644,7 @@ export const Jobs: React.FC = () => {
             </div>
           </div>
         ) : (
-          <p className="text-slate-550 text-center text-sm py-8">Failed to calculate compatibility diagnostics.</p>
+          <p className="text-slate-500 text-center text-sm py-8">Failed to calculate compatibility diagnostics.</p>
         )}
       </Modal>
     </div>

@@ -79,7 +79,7 @@ export const Signup: React.FC = () => {
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Create a new account
         </h2>
-        <p className="mt-2 text-sm text-slate-655 dark:text-slate-400">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           Or{' '}
           <Link to="/login" className="font-semibold text-violet-600 hover:text-violet-500 dark:text-violet-400">
             sign in to your existing account

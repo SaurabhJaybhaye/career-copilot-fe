@@ -26,7 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
     primary: 'bg-violet-650 hover:bg-violet-755 text-white dark:bg-violet-600 dark:hover:bg-violet-700',
     secondary: 'border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700',
     danger: 'bg-red-650 hover:bg-red-755 text-white dark:bg-red-600 dark:hover:bg-red-700 focus:ring-red-500',
-    default: 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-250 dark:hover:bg-slate-600',
+    default: 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600',
   }
 
   const sizes = {

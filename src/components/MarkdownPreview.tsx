@@ -39,7 +39,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, class
       // Horizontal Rule
       if (trimmed === '---' || trimmed === '***') {
         flushList(idx)
-        elements.push(<hr key={idx} className="my-4 border-slate-250 dark:border-slate-750" />)
+        elements.push(<hr key={idx} className="my-4 border-slate-200 dark:border-slate-700" />)
         return
       }
 
@@ -58,7 +58,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, class
       if (trimmed.startsWith('## ')) {
         flushList(idx)
         elements.push(
-          <h2 key={idx} className="text-base font-bold text-slate-800 dark:text-slate-100 mt-5 mb-2 border-b pb-1 border-slate-150 dark:border-slate-800">
+          <h2 key={idx} className="text-base font-bold text-slate-800 dark:text-slate-100 mt-5 mb-2 border-b pb-1 border-slate-200 dark:border-slate-800">
             {parseInlineStyles(trimmed.substring(3))}
           </h2>
         )
@@ -69,7 +69,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, class
       if (trimmed.startsWith('### ')) {
         flushList(idx)
         elements.push(
-          <h3 key={idx} className="text-sm font-bold text-slate-700 dark:text-slate-250 mt-4 mb-2">
+          <h3 key={idx} className="text-sm font-bold text-slate-700 dark:text-slate-200 mt-4 mb-2">
             {parseInlineStyles(trimmed.substring(4))}
           </h3>
         )
@@ -79,7 +79,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, class
       // Bullet List Item
       if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
         listItems.push(
-          <li key={`li-${idx}`} className="text-xs text-slate-650 dark:text-slate-350 font-medium">
+          <li key={`li-${idx}`} className="text-xs text-slate-600 dark:text-slate-300 font-medium">
             {parseInlineStyles(trimmed.substring(2))}
           </li>
         )
@@ -95,7 +95,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, class
       // Normal Paragraph
       flushList(idx)
       elements.push(
-        <p key={idx} className="text-xs text-slate-650 dark:text-slate-350 leading-relaxed mb-3">
+        <p key={idx} className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-3">
           {parseInlineStyles(trimmed)}
         </p>
       )
@@ -106,7 +106,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, class
   }
 
   return (
-    <div className={`p-6 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-150 dark:border-slate-700 rounded-xl overflow-y-auto max-h-[500px] text-left select-text ${className}`}>
+    <div className={`p-6 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 rounded-xl overflow-y-auto max-h-[500px] text-left select-text ${className}`}>
       {parseMarkdown(content)}
     </div>
   )
