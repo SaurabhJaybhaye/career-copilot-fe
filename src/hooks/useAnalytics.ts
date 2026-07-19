@@ -48,12 +48,13 @@ export const useResumeAnalyticsQuery = () => {
         success: boolean
         message: string
         data: {
-          resumeStats: ResumeAnalyticsItem[]
+          resumes: ResumeAnalyticsItem[]
+          resumeStats?: ResumeAnalyticsItem[]
         }
       }>(API_ENDPOINTS.ANALYTICS.RESUMES)
 
-      // The backend returns resumeStats, let's map it safely
-      return (response as any).data?.resumeStats || []
+      // Map safely using backend's resumes field first, then fallback to resumeStats
+      return (response as any).data?.resumes || (response as any).data?.resumeStats || []
     },
   })
 }
@@ -66,12 +67,13 @@ export const useApplicationAnalyticsQuery = () => {
         success: boolean
         message: string
         data: {
-          monthlyTrends: ApplicationAnalyticsItem[]
+          timeline: ApplicationAnalyticsItem[]
+          monthlyTrends?: ApplicationAnalyticsItem[]
         }
       }>(API_ENDPOINTS.ANALYTICS.APPLICATIONS)
 
-      // The backend returns monthlyTrends or similar, let's map it safely
-      const trends = (response as any).data?.monthlyTrends || (response as any).data || []
+      // Map safely using backend's timeline field first, then fallback
+      const trends = (response as any).data?.timeline || (response as any).data?.monthlyTrends || (response as any).data || []
       return Array.isArray(trends) ? trends : []
     },
   })
@@ -85,11 +87,13 @@ export const useSourceAnalyticsQuery = () => {
         success: boolean
         message: string
         data: {
-          sourceCounts: SourceAnalyticsItem[]
+          sources: SourceAnalyticsItem[]
+          sourceCounts?: SourceAnalyticsItem[]
         }
       }>(API_ENDPOINTS.ANALYTICS.SOURCES)
 
-      const counts = (response as any).data?.sourceCounts || (response as any).data || []
+      // Map safely using backend's sources field first, then fallback
+      const counts = (response as any).data?.sources || (response as any).data?.sourceCounts || (response as any).data || []
       return Array.isArray(counts) ? counts : []
     },
   })
@@ -102,10 +106,13 @@ export const useConversionAnalyticsQuery = () => {
       const response = await api.get<{
         success: boolean
         message: string
-        data: ConversionAnalytics
+        data: {
+          conversions: ConversionAnalytics
+        }
       }>(API_ENDPOINTS.ANALYTICS.CONVERSIONS)
 
-      return response.data
+      // Map safely using backend's conversions wrapper first, then fallback
+      return (response as any).data?.conversions || response.data
     },
   })
 }
