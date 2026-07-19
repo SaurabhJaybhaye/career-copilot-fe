@@ -153,6 +153,27 @@ export const ResumeBuilder: React.FC = () => {
     return () => clearTimeout(timer)
   }, [uploadResumeMutation.isPending])
 
+  const computeResumeStrength = () => {
+    let score = 0
+    const checklist = [
+      { id: 'title', label: 'Document label specified', isCompleted: editTitle.trim().length > 0, scoreVal: 10 },
+      { id: 'name', label: 'Contact full name provided', isCompleted: editName.trim().length > 0, scoreVal: 10 },
+      { id: 'email', label: 'Valid email address entered', isCompleted: editEmail.trim().includes('@'), scoreVal: 10 },
+      { id: 'phone', label: 'Phone contact provided', isCompleted: editPhone.trim().length >= 7, scoreVal: 10 },
+      { id: 'links', label: 'At least 1 profile link included', isCompleted: editLinks.length > 0, scoreVal: 10 },
+      { id: 'summary', label: 'Professional summary written', isCompleted: editSummary.trim().length > 20, scoreVal: 15 },
+      { id: 'experience', label: 'At least 1 job experience added', isCompleted: editExperience.length > 0, scoreVal: 15 },
+      { id: 'education', label: 'At least 1 school/degree added', isCompleted: editEducation.length > 0, scoreVal: 10 },
+      { id: 'projects', label: 'At least 1 project added', isCompleted: editProjects.length > 0, scoreVal: 10 },
+    ]
+    
+    checklist.forEach(item => {
+      if (item.isCompleted) score += item.scoreVal
+    })
+    
+    return { score, checklist }
+  }
+
   const startVerification = (resume: Resume) => {
     const activeId = resume._id || resume.id
     const normalizedResume = { ...resume, id: activeId }
@@ -500,6 +521,74 @@ export const ResumeBuilder: React.FC = () => {
             {/* Column 1: Contact, Summary & Tags */}
             <div className="space-y-6">
               
+              {/* Card: Resume Strength Score & Checklist */}
+              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center">
+                      <Award className="mr-2 h-4.5 w-4.5 text-violet-650" />
+                      Resume Completeness Score
+                    </h3>
+                    <p className="text-xxs text-slate-455 dark:text-slate-400 mt-1">
+                      Improve your score to ensure applicant tracking systems (ATS) can parse your profile fully.
+                    </p>
+                  </div>
+                  {/* SVG Circle Gauge */}
+                  <div className="relative flex items-center justify-center h-16 w-16 flex-shrink-0">
+                    <svg className="w-full h-full transform -rotate-90">
+                      <circle
+                        cx="32"
+                        cy="32"
+                        r="26"
+                        className="text-slate-100 dark:text-slate-700 stroke-current"
+                        strokeWidth="5"
+                        fill="transparent"
+                      />
+                      <circle
+                        cx="32"
+                        cy="32"
+                        r="26"
+                        className="text-violet-650 dark:text-violet-550 stroke-current transition-all duration-300"
+                        strokeWidth="5"
+                        strokeDasharray={2 * Math.PI * 26}
+                        strokeDashoffset={2 * Math.PI * 26 * (1 - computeResumeStrength().score / 100)}
+                        strokeLinecap="round"
+                        fill="transparent"
+                      />
+                    </svg>
+                    <span className="absolute text-sm font-black text-slate-850 dark:text-white">
+                      {computeResumeStrength().score}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Progress bar line */}
+                <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-violet-650 h-full transition-all duration-500"
+                    style={{ width: `${computeResumeStrength().score}%` }}
+                  />
+                </div>
+
+                {/* Checklist items */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 border-t border-slate-50 dark:border-slate-700">
+                  {computeResumeStrength().checklist.map((item) => (
+                    <div key={item.id} className="flex items-center gap-2 text-xxs font-medium text-slate-600 dark:text-slate-355">
+                      <span className={`flex-shrink-0 h-4.5 w-4.5 rounded-full flex items-center justify-center border transition ${
+                        item.isCompleted
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/20 dark:border-emerald-800'
+                          : 'bg-slate-55 border-slate-200 text-slate-400 dark:bg-slate-900/30 dark:border-slate-800'
+                      }`}>
+                        {item.isCompleted ? <Check className="h-3 w-3" /> : <span className="h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />}
+                      </span>
+                      <span className={item.isCompleted ? 'line-through text-slate-400' : ''}>
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {/* Card: Document Title */}
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-4">
                 <h3 className="text-sm font-bold text-slate-955 dark:text-white flex items-center border-b pb-2.5 border-slate-50 dark:border-slate-700">
