@@ -83,7 +83,7 @@ export const useCreateJobMutation = () => {
         data: {
           job: Job
         }
-      }>(API_ENDPOINTS.JOBS.CREATE, payload)
+      }>(API_ENDPOINTS.JOBS.CREATE, payload, { timeout: 100000 })
 
       return response.data?.job
     },
@@ -116,7 +116,7 @@ export const useUpdateJobMutation = () => {
         data: {
           job: Job
         }
-      }>(API_ENDPOINTS.JOBS.UPDATE(id), payload)
+      }>(API_ENDPOINTS.JOBS.UPDATE(id), payload, { timeout: 100000 })
 
       return response.data?.job
     },
