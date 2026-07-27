@@ -162,3 +162,66 @@ export const useMatchResumesMutation = () => {
     },
   })
 }
+
+export interface FetchExternalJobsPayload {
+  title: string
+  portal?: 'linkedin' | 'indeed'
+  location?: string
+  postedOn?: '24h' | 'past_week' | 'past_month'
+  experienceLevel?:
+    | 'internship'
+    | 'entry_level'
+    | 'associate'
+    | 'mid_senior'
+    | 'director'
+    | 'executive'
+  limit?: number
+  saveToDb?: boolean
+}
+
+export interface ScrapedJobItem {
+  _id: string
+  userId?: string
+  title: string
+  company: string
+  location: string
+  description: string
+  url: string
+  salary: string
+  isEasyApply: boolean
+  insights: string[]
+  skills: string[]
+  technologies?: string[]
+  domains?: string[]
+  status: 'active' | 'archived' | 'draft'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FetchExternalJobsResponse {
+  success: boolean
+  message: string
+  data: {
+    jobs: ScrapedJobItem[]
+  }
+}
+
+export const useFetchExternalJobsMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (payload: FetchExternalJobsPayload) => {
+      const response = await api.post<FetchExternalJobsResponse>(
+        API_ENDPOINTS.JOBS.FETCH_EXTERNAL,
+        payload,
+        { timeout: 120000 }
+      )
+      return response.data?.jobs || []
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
+

@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit, Sparkles } from 'lucide-react'
+import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit, Sparkles, Globe, Search, Layers } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
 import { Select } from '@/components/Select'
 import { Badge } from '@/components/Badge'
 import { Modal } from '@/components/Modal'
 import { DataTable } from '@/components/DataTable'
+import { ExternalJobSearchFilter } from '@/components/ExternalJobSearchFilter'
+import { ExternalJobCard } from '@/components/ExternalJobCard'
 import { 
   useJobsQuery, 
   useCreateJobMutation, 
   useUpdateJobMutation,
   useDeleteJobMutation, 
   useMatchResumesMutation, 
+  useFetchExternalJobsMutation,
 } from '@/hooks/useJobs'
-import type { Job, MatchResult } from '@/hooks/useJobs'
+import type { Job, MatchResult, ScrapedJobItem, FetchExternalJobsPayload } from '@/hooks/useJobs'
 
 export const Jobs: React.FC = () => {
   const navigate = useNavigate()
@@ -24,8 +27,16 @@ export const Jobs: React.FC = () => {
   const updateJobMutation = useUpdateJobMutation()
   const deleteJobMutation = useDeleteJobMutation()
   const matchResumesMutation = useMatchResumesMutation()
+  const fetchExternalJobsMutation = useFetchExternalJobsMutation()
 
-  // State controls
+  // Tab State: 'scraper' | 'tracked'
+  const [activeTab, setActiveTab] = useState<'scraper' | 'tracked'>('scraper')
+
+  // External Scraper state
+  const [scrapedJobs, setScrapedJobs] = useState<ScrapedJobItem[]>([])
+  const [hasSearchedExternal, setHasSearchedExternal] = useState(false)
+
+  // State controls for manual intake
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editingJobId, setEditingJobId] = useState<string | null>(null)
@@ -45,8 +56,9 @@ export const Jobs: React.FC = () => {
   const [selectedMatch, setSelectedMatch] = useState<MatchResult | null>(null)
   const [isMatchingLoading, setIsMatchingLoading] = useState(false)
 
-  // Find active job details from list
-  const activeJob = jobs.find(j => (j._id || j.id) === selectedJobId)
+  // Find active job details from either tracked jobs or scraped jobs list
+  const activeJob = jobs.find(j => (j._id || j.id) === selectedJobId) || 
+    (scrapedJobs.find(j => j._id === selectedJobId) as unknown as Job | undefined)
 
   // Automatically fetch matching resumes when selectedJobId changes
   useEffect(() => {
@@ -69,6 +81,29 @@ export const Jobs: React.FC = () => {
       })
     }
   }, [selectedJobId])
+
+  const handleFetchExternalJobs = async (payload: FetchExternalJobsPayload) => {
+    try {
+      const results = await fetchExternalJobsMutation.mutateAsync(payload)
+      setScrapedJobs(results)
+      setHasSearchedExternal(true)
+      if (results.length > 0) {
+        toast.success(`Scraped ${results.length} external job postings!`)
+      } else {
+        toast('No jobs found matching your search parameters.', { icon: '🔍' })
+      }
+    } catch (err: any) {
+      toast.error('Failed to fetch jobs. Please check search parameters.')
+    }
+  }
+
+  const handleTailorResume = (jobId: string) => {
+    navigate(`/copilot?jobId=${jobId}`)
+  }
+
+  const handleMatchResumes = (jobId: string) => {
+    setSelectedJobId(jobId)
+  }
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -181,7 +216,7 @@ export const Jobs: React.FC = () => {
     }
   }
 
-  // DataTable columns
+  // DataTable columns for tracked jobs
   const columns = [
     {
       header: 'Job Title & Company',
@@ -315,11 +350,12 @@ export const Jobs: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header & Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-200 dark:border-slate-700 gap-4">
         <div className="text-left">
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Job Matches</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Job Discovery & Diagnostics</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Register target job postings to automatically parse requirements and run match diagnostics against your CVs.
+            Search live job postings from LinkedIn & Indeed or manage target job requirements for AI resume tailoring and match scoring.
           </p>
         </div>
         <Button
@@ -331,39 +367,151 @@ export const Jobs: React.FC = () => {
         </Button>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
-        {isListLoading ? (
-          <div className="py-16 flex flex-col items-center justify-center space-y-3">
-            <span className="animate-spin h-8 w-8 text-violet-650 rounded-full border-2 border-violet-100 border-t-violet-650" />
-            <p className="text-xs text-slate-500 font-semibold">Retrieving tracked jobs...</p>
-          </div>
-        ) : jobs.length === 0 ? (
-          <div className="py-16 text-center text-slate-400 dark:text-slate-500 max-w-md mx-auto">
-            <Briefcase className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-            <h4 className="font-extrabold text-slate-900 dark:text-white text-base">No Jobs Tracked Yet</h4>
-            <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
-              Register job description requirements to compare keywords, calculate compatibility scores, and optimize your application targets.
-            </p>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsAddOpen(true)}
-              className="mt-4"
-            >
-              Add Your First Job
-            </Button>
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={jobs}
-            pageSize={10}
-            searchPlaceholder="Search jobs, companies, or locations..."
-            searchKeys={['title', 'company', 'location']}
-          />
-        )}
+      {/* Navigation Tabs */}
+      <div className="flex items-center border-b border-slate-200 dark:border-slate-700 gap-4">
+        <button
+          onClick={() => setActiveTab('scraper')}
+          className={`pb-3 text-sm font-extrabold flex items-center gap-2 transition border-b-2 ${
+            activeTab === 'scraper'
+              ? 'border-violet-650 text-violet-650 dark:text-violet-400'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+          }`}
+        >
+          <Globe className="h-4 w-4" /> Live Portal Job Scraper
+        </button>
+
+        <button
+          onClick={() => setActiveTab('tracked')}
+          className={`pb-3 text-sm font-extrabold flex items-center gap-2 transition border-b-2 ${
+            activeTab === 'tracked'
+              ? 'border-violet-650 text-violet-650 dark:text-violet-400'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+          }`}
+        >
+          <Layers className="h-4 w-4" /> Tracked Target Jobs ({jobs.length})
+        </button>
       </div>
 
+      {/* Tab 1: Live Portal Job Scraper */}
+      {activeTab === 'scraper' && (
+        <div className="space-y-6">
+          <ExternalJobSearchFilter
+            onSearch={handleFetchExternalJobs}
+            isLoading={fetchExternalJobsMutation.isPending}
+          />
+
+          {/* Skeleton Loader during Scraping */}
+          {fetchExternalJobsMutation.isPending && (
+            <div className="space-y-4">
+              <div className="p-4 bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/40 rounded-2xl flex items-center justify-between text-left">
+                <div className="flex items-center gap-3">
+                  <span className="animate-spin h-6 w-6 text-violet-650 rounded-full border-2 border-violet-200 border-t-violet-650" />
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">Scraping External Job Portals...</h4>
+                    <p className="text-xs text-slate-500">Connecting to Apify actors. This typically takes 3 to 10 seconds.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Skeleton cards grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((n) => (
+                  <div key={n} className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 animate-pulse space-y-4">
+                    <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+                    <div className="flex gap-2">
+                      <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full w-16" />
+                      <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-full w-20" />
+                    </div>
+                    <div className="h-12 bg-slate-100 dark:bg-slate-700/50 rounded-xl" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Results Grid */}
+          {!fetchExternalJobsMutation.isPending && hasSearchedExternal && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-left">
+                <h3 className="text-sm font-extrabold text-slate-700 dark:text-slate-300">
+                  Scraped Job Postings ({scrapedJobs.length})
+                </h3>
+              </div>
+
+              {scrapedJobs.length === 0 ? (
+                <div className="py-16 text-center text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-6">
+                  <Search className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-base">No Matching Jobs Found</h4>
+                  <p className="text-xs text-slate-500 mt-1.5 max-w-sm mx-auto">
+                    Try adjusting your job title keywords or location filters above to retrieve active postings.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {scrapedJobs.map((job) => (
+                    <ExternalJobCard
+                      key={job._id}
+                      job={job}
+                      onMatchResumes={handleMatchResumes}
+                      onTailorResume={handleTailorResume}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Initial Onboarding Banner */}
+          {!fetchExternalJobsMutation.isPending && !hasSearchedExternal && (
+            <div className="bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-indigo-500/10 dark:from-violet-950/30 dark:via-purple-950/30 dark:to-indigo-950/30 p-8 rounded-2xl border border-violet-100 dark:border-violet-800/40 text-center space-y-3">
+              <Globe className="h-10 w-10 text-violet-650 mx-auto opacity-80" />
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Ready to Scrape External Jobs</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                Enter your target job title in the search filter above to fetch live job postings from LinkedIn & Indeed. Scraped jobs will automatically include extracted skills, Easy Apply tags, and AI insights.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab 2: Tracked Target Jobs */}
+      {activeTab === 'tracked' && (
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+          {isListLoading ? (
+            <div className="py-16 flex flex-col items-center justify-center space-y-3">
+              <span className="animate-spin h-8 w-8 text-violet-650 rounded-full border-2 border-violet-100 border-t-violet-650" />
+              <p className="text-xs text-slate-500 font-semibold">Retrieving tracked jobs...</p>
+            </div>
+          ) : jobs.length === 0 ? (
+            <div className="py-16 text-center text-slate-400 dark:text-slate-500 max-w-md mx-auto">
+              <Briefcase className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+              <h4 className="font-extrabold text-slate-900 dark:text-white text-base">No Jobs Tracked Yet</h4>
+              <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Register job description requirements to compare keywords, calculate compatibility scores, and optimize your application targets.
+              </p>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsAddOpen(true)}
+                className="mt-4"
+              >
+                Add Your First Job
+              </Button>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={jobs}
+              pageSize={10}
+              searchPlaceholder="Search jobs, companies, or locations..."
+              searchKeys={['title', 'company', 'location']}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Add Job Modal */}
       <Modal
         isOpen={isAddOpen}
         onClose={closeAddModal}
@@ -432,6 +580,7 @@ export const Jobs: React.FC = () => {
         </form>
       </Modal>
 
+      {/* Edit Job Modal */}
       <Modal
         isOpen={isEditOpen}
         onClose={closeEditModal}

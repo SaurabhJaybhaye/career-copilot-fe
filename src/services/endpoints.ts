@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
   JOBS: {
     LIST: '/jobs',
     CREATE: '/jobs',
+    FETCH_EXTERNAL: '/jobs/fetch-external',
     DETAILS: (id: string) => `/jobs/${id}`,
     UPDATE: (id: string) => `/jobs/${id}`,
     DELETE: (id: string) => `/jobs/${id}`,
