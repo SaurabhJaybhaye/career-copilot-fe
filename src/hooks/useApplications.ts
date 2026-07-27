@@ -5,7 +5,7 @@ import type { Job } from './useJobs'
 import type { Resume } from './useResumes'
 
 export interface TimelineEvent {
-  status: 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
+  status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
   note?: string
   updatedAt: string
 }
@@ -16,7 +16,7 @@ export interface Application {
   userId: string
   jobId: Job
   resumeId?: Resume | null
-  status: 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
+  status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
   appliedAt: string
   note?: string
   timeline?: TimelineEvent[]
@@ -44,7 +44,7 @@ export const useApplicationsQuery = () => {
 interface CreateApplicationPayload {
   jobId: string
   resumeId?: string | null
-  status?: 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
+  status?: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
   appliedAt?: string | null
   note?: string | null
 }
@@ -73,7 +73,7 @@ export const useCreateApplicationMutation = () => {
 
 interface UpdateApplicationStatusPayload {
   id: string
-  status: 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
+  status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn'
   note?: string | null
 }
 

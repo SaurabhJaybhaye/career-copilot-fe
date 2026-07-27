@@ -1,3 +1,5 @@
+
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/services/api'
 import { API_ENDPOINTS } from '@/services/endpoints'
@@ -12,6 +14,9 @@ export interface Job {
   url?: string
   salary?: string
   status: 'active' | 'archived' | 'draft'
+  source?: string
+  isEasyApply?: boolean
+  insights?: string[]
   skills?: string[]
   createdAt: string
   updatedAt: string
@@ -214,7 +219,7 @@ export const useFetchExternalJobsMutation = () => {
       const response = await api.post<FetchExternalJobsResponse>(
         API_ENDPOINTS.JOBS.FETCH_EXTERNAL,
         payload,
-        { timeout: 120000 }
+        { timeout: 200000 }
       )
       return response.data?.jobs || []
     },

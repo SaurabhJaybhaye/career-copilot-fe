@@ -11,7 +11,8 @@ import {
   Briefcase, 
   FileText, 
   MessageSquare,
-  TrendingUp
+  TrendingUp,
+  Bookmark
 } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
@@ -28,6 +29,7 @@ import { useJobsQuery } from '@/hooks/useJobs'
 import { useResumesQuery } from '@/hooks/useResumes'
 
 const STATUS_COLUMNS = [
+  { key: 'saved', label: 'Saved', color: 'border-t-amber-500 text-amber-600 bg-amber-50/50 dark:bg-amber-950/10' },
   { key: 'applied', label: 'Applied', color: 'border-t-blue-500 text-blue-600 bg-blue-50/50 dark:bg-blue-950/10' },
   { key: 'interviewing', label: 'Interviewing', color: 'border-t-purple-500 text-purple-600 bg-purple-50/50 dark:bg-purple-950/10' },
   { key: 'offered', label: 'Offered', color: 'border-t-emerald-500 text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/10' },
@@ -59,7 +61,7 @@ export const Applications: React.FC = () => {
   const filteredApplications = applications.filter((app) => {
     const job = app.jobId
     const resume = app.resumeId
-    const appTime = new Date(app.appliedAt).getTime()
+    const appTime = new Date(app.appliedAt || app.createdAt).getTime()
 
     const matchesSearch =
       searchQuery.trim() === '' ||
@@ -77,6 +79,24 @@ export const Applications: React.FC = () => {
       !endDate || appTime <= new Date(endDate + 'T23:59:59').getTime()
 
     return matchesSearch && matchesResume && matchesStartDate && matchesEndDate
+  })
+
+  // Filter jobs to exclude those that are already tracked as applications
+  const appliedJobIds = new Set(
+    applications.map(app => (app.jobId?._id || app.jobId?.id))
+  )
+
+  const availableJobs = jobs.filter(
+    job => !appliedJobIds.has(job._id || job.id)
+  )
+
+  const filteredAvailableJobs = availableJobs.filter((job) => {
+    return (
+      searchQuery.trim() === '' ||
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (job.location && job.location.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
   })
 
   // Add Application Form fields
@@ -97,14 +117,6 @@ export const Applications: React.FC = () => {
   // Find active application from list
   const activeApp = applications.find(a => (a._id || a.id) === selectedAppId)
 
-  // Filter jobs to exclude those that are already applied to
-  const appliedJobIds = new Set(
-    applications.map(app => (app.jobId?._id || app.jobId?.id))
-  )
-  const availableJobs = jobs.filter(
-    job => !appliedJobIds.has(job._id || job.id)
-  )
-
   // Add Application submit handler
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -118,7 +130,7 @@ export const Applications: React.FC = () => {
         jobId,
         resumeId: resumeId || null,
         status,
-        appliedAt: appliedAt ? new Date(appliedAt).toISOString() : null,
+        appliedAt: status === 'saved' ? null : (appliedAt ? new Date(appliedAt).toISOString() : null),
         note: note.trim() || null,
       })
       toast.success('Job application tracking registered!')
@@ -164,6 +176,23 @@ export const Applications: React.FC = () => {
     setActiveOverCol(null)
 
     if (!id) return
+
+    // Handle untracked saved jobs dragged from Saved column to another column
+    if (id.startsWith('job-')) {
+      const targetJobId = id.replace('job-', '')
+      try {
+        await createApplicationMutation.mutateAsync({
+          jobId: targetJobId,
+          status: targetStatus,
+          appliedAt: targetStatus === 'saved' ? null : new Date().toISOString(),
+          note: `Tracked application in ${targetStatus} stage from Saved Jobs`,
+        })
+        toast.success(`Job application tracked in ${targetStatus} phase!`)
+      } catch (err: any) {
+        toast.error(err.message || 'Failed to track application.')
+      }
+      return
+    }
 
     const app = applications.find(a => (a._id || a.id) === id)
     if (!app) return
@@ -251,7 +280,7 @@ export const Applications: React.FC = () => {
             Application Tracker
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Drag cards to update application phases, manage linked CVs, and log notes.
+            Track saved target jobs, drag cards to update application phases, manage linked CVs, and log notes.
           </p>
         </div>
         <Button
@@ -268,7 +297,7 @@ export const Applications: React.FC = () => {
           <span className="animate-spin h-8 w-8 text-violet-650 rounded-full border-2 border-violet-100 border-t-violet-650" />
           <p className="text-xs text-slate-500 font-semibold">Retrieving job applications pipeline...</p>
         </div>
-      ) : applications.length === 0 ? (
+      ) : applications.length === 0 && jobs.length === 0 ? (
         <div className="py-20 text-center text-slate-400 dark:text-slate-500 max-w-md mx-auto">
           <Briefcase className="h-12 w-12 mx-auto text-slate-300 mb-3" />
           <h4 className="font-extrabold text-slate-900 dark:text-white text-base">No Applications Tracked Yet</h4>
@@ -347,89 +376,157 @@ export const Applications: React.FC = () => {
           </div>
 
           {/* Kanban Board Columns Container */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 overflow-x-auto pb-6 select-none">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 overflow-x-auto pb-6 select-none">
             {STATUS_COLUMNS.map((col) => {
               const colApps = filteredApplications.filter(a => a.status === col.key)
+              const isSavedCol = col.key === 'saved'
+              const colAvailableJobs = isSavedCol ? filteredAvailableJobs : []
+              const totalCount = colApps.length + colAvailableJobs.length
               const isHovered = activeOverCol === col.key
 
-            return (
-              <div 
-                key={col.key} 
-                onDragOver={(e) => handleDragOver(e, col.key)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, col.key)}
-                className={`bg-slate-50 dark:bg-slate-900/30 p-4.5 rounded-2xl border-t-4 flex flex-col h-full min-h-[600px] transition-all duration-200 border border-slate-100 dark:border-slate-800/80 ${col.color} ${
-                  isHovered 
-                    ? 'ring-2 ring-violet-500 border-violet-500 dark:bg-violet-950/10' 
-                    : 'shadow-sm'
-                }`}
-              >
-                {/* Column Title Header */}
-                <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800/60 mb-4">
-                  <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                    {col.label}
-                  </span>
-                  <Badge variant="applied" className="!py-0.5 !px-2 text-xxs font-extrabold bg-slate-200/60 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-none">
-                    {colApps.length}
-                  </Badge>
-                </div>
+              return (
+                <div 
+                  key={col.key} 
+                  onDragOver={(e) => handleDragOver(e, col.key)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, col.key)}
+                  className={`bg-slate-50 dark:bg-slate-900/30 p-4 rounded-2xl border-t-4 flex flex-col h-full min-h-[600px] transition-all duration-200 border border-slate-100 dark:border-slate-800/80 ${col.color} ${
+                    isHovered 
+                      ? 'ring-2 ring-violet-500 border-violet-500 dark:bg-violet-950/10' 
+                      : 'shadow-sm'
+                  }`}
+                >
+                  {/* Column Title Header */}
+                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800/60 mb-4">
+                    <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
+                      {col.label}
+                    </span>
+                    <Badge variant="applied" className="!py-0.5 !px-2 text-xxs font-extrabold bg-slate-200/60 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-none">
+                      {totalCount}
+                    </Badge>
+                  </div>
 
-                {/* Cards stack */}
-                <div className="flex-1 flex flex-col space-y-3.5 overflow-y-auto">
-                  {colApps.length === 0 ? (
-                    <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800/80 rounded-2xl p-4 text-center min-h-[120px]">
-                      <span className="text-xxs text-slate-400 dark:text-slate-500 font-semibold tracking-wide uppercase">Empty Phase</span>
-                    </div>
-                  ) : (
-                    colApps.map((app) => {
-                      const id = app._id || app.id || ''
-                      const job = app.jobId
-                      const resume = app.resumeId
+                  {/* Cards stack */}
+                  <div className="flex-1 flex flex-col space-y-3.5 overflow-y-auto">
+                    {totalCount === 0 ? (
+                      <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800/80 rounded-2xl p-4 text-center min-h-[120px]">
+                        <span className="text-xxs text-slate-400 dark:text-slate-500 font-semibold tracking-wide uppercase">Empty Phase</span>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Untracked Saved Jobs (rendered in Saved column) */}
+                        {isSavedCol && colAvailableJobs.map((job) => {
+                          const jobIdStr = job._id || job.id || ''
+                          const dragId = `job-${jobIdStr}`
 
-                      return (
-                        <div
-                          key={id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, id)}
-                          onDragEnd={handleDragEnd}
-                          onClick={() => setSelectedAppId(id)}
-                          className="bg-white dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition duration-150 text-left flex flex-col justify-between space-y-3.5"
-                        >
-                          <div>
-                            <span className="text-[10px] font-extrabold text-violet-600 bg-violet-50 dark:bg-violet-950/20 px-2 py-0.5 rounded-lg border border-violet-100 dark:border-violet-900/30">
-                              {job?.company || 'Unknown Company'}
-                            </span>
-                            <h4 className="text-xs font-bold text-slate-900 dark:text-white mt-2 line-clamp-2 leading-tight">
-                              {job?.title || 'Unknown Title'}
-                            </h4>
-                          </div>
-
-                          <div className="pt-2.5 border-t border-slate-100 dark:border-slate-700 flex flex-col space-y-1.5">
-                            {resume && (
-                              <div className="flex items-center text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
-                                <FileText className="mr-1 h-3 w-3 text-purple-400" />
-                                <span className="truncate max-w-[150px]">{resume.title}</span>
+                          return (
+                            <div
+                              key={dragId}
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, dragId)}
+                              onDragEnd={handleDragEnd}
+                              onClick={() => {
+                                setJobId(jobIdStr)
+                                setStatus('saved')
+                                setIsAddOpen(true)
+                              }}
+                              className="bg-white dark:bg-slate-800/80 p-3.5 rounded-xl border border-amber-200 dark:border-amber-900/40 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700 transition duration-150 text-left flex flex-col justify-between space-y-3.5"
+                            >
+                              <div>
+                                <div className="flex items-center justify-between gap-1">
+                                  <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-lg border border-amber-200 dark:border-amber-900/30 truncate max-w-[120px]">
+                                    {job.company || 'Saved Job'}
+                                  </span>
+                                  <span className="inline-flex items-center text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                                    <Bookmark className="w-3 h-3 mr-0.5 fill-amber-400 text-amber-500" /> Saved
+                                  </span>
+                                </div>
+                                <h4 className="text-xs font-bold text-slate-900 dark:text-white mt-2 line-clamp-2 leading-tight">
+                                  {job.title}
+                                </h4>
                               </div>
-                            )}
-                            <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold">
-                              <span className="flex items-center">
-                                <Calendar className="mr-1 h-3 w-3" />
-                                {new Date(app.appliedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                              </span>
-                              {job?.salary && (
-                                <span className="font-bold text-slate-500 dark:text-slate-300">
-                                  {job.salary}
-                                </span>
-                              )}
+
+                              <div className="pt-2.5 border-t border-slate-100 dark:border-slate-700 flex flex-col space-y-1.5">
+                                <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                                  <span className="flex items-center">
+                                    <Briefcase className="mr-1 h-3 w-3" />
+                                    {job.location || 'Remote'}
+                                  </span>
+                                  {job.salary && (
+                                    <span className="font-bold text-slate-500 dark:text-slate-300">
+                                      {job.salary}
+                                    </span>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setJobId(jobIdStr)
+                                    setStatus('applied')
+                                    setIsAddOpen(true)
+                                  }}
+                                  className="!py-1 !px-2 text-[10px] w-full mt-1"
+                                >
+                                  <Plus className="w-3 h-3 mr-1" /> Track Application
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      )
-                    })
-                  )}
+                          )
+                        })}
+
+                        {/* Tracked Applications */}
+                        {colApps.map((app) => {
+                          const id = app._id || app.id || ''
+                          const job = app.jobId
+                          const resume = app.resumeId
+
+                          return (
+                            <div
+                              key={id}
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, id)}
+                              onDragEnd={handleDragEnd}
+                              onClick={() => setSelectedAppId(id)}
+                              className="bg-white dark:bg-slate-800/80 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/60 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition duration-150 text-left flex flex-col justify-between space-y-3.5"
+                            >
+                              <div>
+                                <span className="text-[10px] font-extrabold text-violet-600 bg-violet-50 dark:bg-violet-950/20 px-2 py-0.5 rounded-lg border border-violet-100 dark:border-violet-900/30">
+                                  {job?.company || 'Unknown Company'}
+                                </span>
+                                <h4 className="text-xs font-bold text-slate-900 dark:text-white mt-2 line-clamp-2 leading-tight">
+                                  {job?.title || 'Unknown Title'}
+                                </h4>
+                              </div>
+
+                              <div className="pt-2.5 border-t border-slate-100 dark:border-slate-700 flex flex-col space-y-1.5">
+                                {resume && (
+                                  <div className="flex items-center text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
+                                    <FileText className="mr-1 h-3 w-3 text-purple-400" />
+                                    <span className="truncate max-w-[150px]">{resume.title}</span>
+                                  </div>
+                                )}
+                                <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold">
+                                  <span className="flex items-center">
+                                    <Calendar className="mr-1 h-3 w-3" />
+                                    {app.appliedAt ? new Date(app.appliedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Saved'}
+                                  </span>
+                                  {job?.salary && (
+                                    <span className="font-bold text-slate-500 dark:text-slate-300">
+                                      {job.salary}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
+              )
             })}
           </div>
         </div>
@@ -531,7 +628,7 @@ export const Applications: React.FC = () => {
                   </span>
                 )}
                 <span className="flex items-center">
-                  <Calendar className="mr-1 h-3.5 w-3.5" /> Applied {new Date(activeApp.appliedAt).toLocaleDateString()}
+                  <Calendar className="mr-1 h-3.5 w-3.5" /> {activeApp.appliedAt ? `Applied ${new Date(activeApp.appliedAt).toLocaleDateString()}` : 'Saved'}
                 </span>
               </div>
 
