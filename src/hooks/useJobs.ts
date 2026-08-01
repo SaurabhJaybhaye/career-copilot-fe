@@ -18,6 +18,7 @@ export interface Job {
   isEasyApply?: boolean
   insights?: string[]
   skills?: string[]
+  postedAt?: string
   createdAt: string
   updatedAt: string
 }
@@ -199,6 +200,7 @@ export interface ScrapedJobItem {
   technologies?: string[]
   domains?: string[]
   status: 'active' | 'archived' | 'draft'
+  postedAt?: string
   createdAt: string
   updatedAt: string
 }

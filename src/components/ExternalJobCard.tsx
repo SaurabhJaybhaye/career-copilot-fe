@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Briefcase, MapPin, DollarSign, ExternalLink, Sparkles, ChevronDown, ChevronUp, Zap, FileText, AlertCircle } from 'lucide-react'
+import { Briefcase, MapPin, DollarSign, ExternalLink, Sparkles, ChevronDown, ChevronUp, Zap, FileText, AlertCircle, Calendar, Clock } from 'lucide-react'
 import { Button } from './Button'
 import type { ScrapedJobItem } from '@/hooks/useJobs'
 
@@ -21,6 +21,17 @@ export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
 
   const isLinkedIn = (job.url && job.url.includes('linkedin.com')) || portal === 'linkedin'
   const isIndeed = (job.url && job.url.includes('indeed.com')) || portal === 'indeed'
+
+  const rawDate = job.postedAt || job.createdAt
+  let formattedDateStr = ''
+  if (rawDate) {
+    const d = new Date(rawDate)
+    if (!isNaN(d.getTime())) {
+      formattedDateStr = `${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at ${d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`
+    } else {
+      formattedDateStr = String(rawDate)
+    }
+  }
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm hover:shadow-md transition duration-200 p-5 text-left flex flex-col justify-between space-y-4">
@@ -62,7 +73,7 @@ export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
           </div>
         </div>
 
-        {/* Location & Salary */}
+        {/* Location, Salary & Posted Date */}
         <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
           <span className="flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5 text-slate-400" />
@@ -72,6 +83,12 @@ export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
             <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
               <DollarSign className="h-3.5 w-3.5" />
               {job.salary}
+            </span>
+          )}
+          {formattedDateStr && (
+            <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-medium">
+              <Calendar className="h-3.5 w-3.5 text-violet-650 opacity-70" />
+              Posted {formattedDateStr}
             </span>
           )}
         </div>

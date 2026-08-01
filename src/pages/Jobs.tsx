@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit, Sparkles, Globe, Search, Layers } from 'lucide-react'
+import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit, Sparkles, Globe, Search, Layers, Calendar, Clock } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
 import { Select } from '@/components/Select'
@@ -266,6 +266,53 @@ export const Jobs: React.FC = () => {
       }
     },
     {
+      header: 'Posted Date & Time',
+      accessor: (row: Job) => {
+        const rawDate = row.postedAt || row.createdAt
+        if (!rawDate) return <span className="text-slate-400 text-xs font-medium">N/A</span>
+
+        const dateObj = new Date(rawDate)
+        const isValidDate = !isNaN(dateObj.getTime())
+
+        if (!isValidDate) {
+          return (
+            <div className="text-left">
+              <span className="text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5 text-slate-400" />
+                {String(rawDate)}
+              </span>
+            </div>
+          )
+        }
+
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })
+        const formattedTime = dateObj.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })
+
+        return (
+          <div className="text-left flex flex-col whitespace-nowrap">
+            <span className="text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-1">
+              <Calendar className="h-3.5 w-3.5 text-violet-650 opacity-80" />
+              {formattedDate}
+            </span>
+            <span className="text-slate-500 dark:text-slate-400 text-[11px] font-semibold flex items-center gap-1 mt-0.5">
+              <Clock className="h-3 w-3 text-slate-400 opacity-75" />
+              {formattedTime}
+            </span>
+          </div>
+        )
+      },
+      sortable: true,
+      sortKey: 'createdAt' as keyof Job
+    },
+    {
       header: 'Actions',
       accessor: (row: Job) => (
         <div className="flex items-center space-x-2">
@@ -504,8 +551,8 @@ export const Jobs: React.FC = () => {
               columns={columns}
               data={jobs}
               pageSize={10}
-              searchPlaceholder="Search jobs, companies, or locations..."
-              searchKeys={['title', 'company', 'location']}
+              searchPlaceholder="Search jobs, companies, or dates..."
+              searchKeys={['title', 'company', 'location', 'postedAt', 'createdAt']}
             />
           )}
         </div>
