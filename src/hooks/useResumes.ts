@@ -139,3 +139,22 @@ export const useDeleteResumeMutation = () => {
     },
   })
 }
+
+export const useDeleteResumesBulkMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const response = await api.post<{
+        success: boolean
+        message: string
+        data: { deletedCount: number }
+      }>(API_ENDPOINTS.RESUMES.BULK_DELETE, { ids })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resumes'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}

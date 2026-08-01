@@ -30,6 +30,7 @@ import {
   useUploadResumeMutation, 
   useUpdateResumeMutation, 
   useDeleteResumeMutation,
+  useDeleteResumesBulkMutation,
 } from '@/hooks/useResumes'
 import type { Resume } from '@/hooks/useResumes'
 
@@ -96,10 +97,12 @@ export const ResumeBuilder: React.FC = () => {
   const uploadResumeMutation = useUploadResumeMutation()
   const updateResumeMutation = useUpdateResumeMutation()
   const deleteResumeMutation = useDeleteResumeMutation()
+  const deleteResumesBulkMutation = useDeleteResumesBulkMutation()
 
   const [title, setTitle] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null)
+  const [selectedResumeIds, setSelectedResumeIds] = useState<string[]>([])
 
   // Manage custom upload phase loader messages
   const [uploadPhase, setUploadPhase] = useState<'extracting' | 'parsing'>('extracting')
@@ -302,6 +305,21 @@ export const ResumeBuilder: React.FC = () => {
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to delete resume.')
+    }
+  }
+
+  const handleBulkDeleteResumes = async (selectedIds: string[], clearSelection: () => void) => {
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected resume(s)?`)) return
+
+    try {
+      const res = await deleteResumesBulkMutation.mutateAsync(selectedIds)
+      toast.success(res.message || `${selectedIds.length} resume(s) deleted successfully.`)
+      clearSelection()
+      if (selectedResumeId && selectedIds.includes(selectedResumeId)) {
+        setSelectedResumeId(null)
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete selected resumes.')
     }
   }
 
@@ -1032,6 +1050,21 @@ export const ResumeBuilder: React.FC = () => {
                 pageSize={5}
                 searchPlaceholder="Search resumes..."
                 searchKeys={['title']}
+                selectable
+                selectedIds={selectedResumeIds}
+                onSelectionChange={setSelectedResumeIds}
+                getRowId={(row) => row._id || row.id || ''}
+                renderBulkActions={(selectedIds, clearSelection) => (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    isLoading={deleteResumesBulkMutation.isPending}
+                    onClick={() => handleBulkDeleteResumes(selectedIds, clearSelection)}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold"
+                  >
+                    <Trash2 className="h-4 w-4" /> Delete Selected ({selectedIds.length})
+                  </Button>
+                )}
               />
             )}
           </div>

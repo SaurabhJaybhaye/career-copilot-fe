@@ -153,6 +153,25 @@ export const useDeleteJobMutation = () => {
   })
 }
 
+export const useDeleteJobsBulkMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const response = await api.post<{
+        success: boolean
+        message: string
+        data: { deletedCount: number }
+      }>(API_ENDPOINTS.JOBS.BULK_DELETE, { ids })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
+
 export const useMatchResumesMutation = () => {
   return useMutation({
     mutationFn: async (id: string) => {

@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
     DETAILS: (id: string) => `/resumes/${id}`,
     UPDATE: (id: string) => `/resumes/${id}`,
     DELETE: (id: string) => `/resumes/${id}`,
+    BULK_DELETE: '/resumes/bulk-delete',
   },
   JOBS: {
     LIST: '/jobs',
@@ -25,6 +26,7 @@ export const API_ENDPOINTS = {
     DETAILS: (id: string) => `/jobs/${id}`,
     UPDATE: (id: string) => `/jobs/${id}`,
     DELETE: (id: string) => `/jobs/${id}`,
+    BULK_DELETE: '/jobs/bulk-delete',
     MATCH_RESUMES: (id: string) => `/jobs/${id}/match-resumes`,
   },
   APPLICATIONS: {

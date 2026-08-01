@@ -19,6 +19,12 @@ export interface DataTableProps<T extends Record<string, any>> {
   filterKey?: keyof T
   filterOptions?: { label: string; value: string }[]
   filterPlaceholder?: string
+  // Selection & Bulk Action Props
+  selectable?: boolean
+  selectedIds?: string[]
+  onSelectionChange?: (selectedIds: string[]) => void
+  getRowId?: (row: T) => string
+  renderBulkActions?: (selectedIds: string[], clearSelection: () => void) => React.ReactNode
 }
 
 export function DataTable<T extends Record<string, any>>({
@@ -30,11 +36,22 @@ export function DataTable<T extends Record<string, any>>({
   filterKey,
   filterOptions,
   filterPlaceholder = 'All Categories',
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
+  getRowId,
+  renderBulkActions,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [sortConfig, setSortConfig] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(null)
+
+  // Helper to extract string ID from a row
+  const getItemId = (row: T): string => {
+    if (getRowId) return getRowId(row)
+    return String(row._id || row.id || '')
+  }
 
   // 1. Reset page when search or filter values change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,6 +122,39 @@ export function DataTable<T extends Record<string, any>>({
     return sortedData.slice(start, end)
   }, [sortedData, currentPage, pageSize])
 
+  // Row selection computations
+  const currentPaginatedIds = useMemo(() => {
+    return paginatedData.map(getItemId).filter(Boolean)
+  }, [paginatedData, getRowId])
+
+  const isAllPaginatedSelected = useMemo(() => {
+    if (currentPaginatedIds.length === 0) return false
+    return currentPaginatedIds.every((id) => selectedIds.includes(id))
+  }, [currentPaginatedIds, selectedIds])
+
+  const handleToggleSelectAll = () => {
+    if (!onSelectionChange) return
+    if (isAllPaginatedSelected) {
+      onSelectionChange(selectedIds.filter((id) => !currentPaginatedIds.includes(id)))
+    } else {
+      const combined = Array.from(new Set([...selectedIds, ...currentPaginatedIds]))
+      onSelectionChange(combined)
+    }
+  }
+
+  const handleToggleRow = (id: string) => {
+    if (!onSelectionChange) return
+    if (selectedIds.includes(id)) {
+      onSelectionChange(selectedIds.filter((i) => i !== id))
+    } else {
+      onSelectionChange([...selectedIds, id])
+    }
+  }
+
+  const clearSelection = () => {
+    onSelectionChange?.([])
+  }
+
   // Sort toggle handler
   const requestSort = (key: keyof T) => {
     let direction: 'asc' | 'desc' = 'asc'
@@ -132,7 +182,7 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <div className="space-y-4">
-      {/* Search & Filter Toolbar */}
+      {/* Search & Filter & Bulk Action Toolbar */}
       <div className="flex flex-col sm:flex-row items-center gap-4">
         {/* Custom styled search container inside table */}
         <div className="relative flex-1 w-full text-left">
@@ -160,6 +210,13 @@ export function DataTable<T extends Record<string, any>>({
             />
           </div>
         )}
+
+        {/* Bulk Action Slot */}
+        {selectable && selectedIds.length > 0 && renderBulkActions && (
+          <div className="w-full sm:w-auto flex items-center gap-2">
+            {renderBulkActions(selectedIds, clearSelection)}
+          </div>
+        )}
       </div>
 
       {/* Responsive Table Wrapper */}
@@ -167,6 +224,16 @@ export function DataTable<T extends Record<string, any>>({
         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700 text-left">
           <thead className="bg-slate-50 dark:bg-slate-900/60 select-none">
             <tr>
+              {selectable && (
+                <th scope="col" className="px-4 py-4.5 text-center w-10">
+                  <input
+                    type="checkbox"
+                    checked={isAllPaginatedSelected}
+                    onChange={handleToggleSelectAll}
+                    className="h-4 w-4 text-violet-650 focus:ring-violet-500 border-slate-300 dark:border-slate-700 rounded cursor-pointer"
+                  />
+                </th>
+              )}
               {columns.map((column, index) => {
                 const sortKey =
                   column.sortKey || (typeof column.accessor === 'string' ? (column.accessor as keyof T) : undefined)
@@ -193,30 +260,46 @@ export function DataTable<T extends Record<string, any>>({
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800 text-sm">
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
+                <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                   No records found.
                 </td>
               </tr>
             ) : (
-              paginatedData.map((row, rowIndex) => (
-                <tr
-                  key={rowIndex}
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors duration-150"
-                >
-                  {columns.map((column, colIndex) => {
-                    const cellContent =
-                      typeof column.accessor === 'function'
-                        ? column.accessor(row)
-                        : (row[column.accessor] as React.ReactNode)
+              paginatedData.map((row, rowIndex) => {
+                const rowId = getItemId(row)
 
-                    return (
-                      <td key={colIndex} className="px-6 py-4 text-slate-800 dark:text-slate-200 whitespace-nowrap">
-                        {cellContent}
+                return (
+                  <tr
+                    key={rowIndex}
+                    className={`hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors duration-150 ${
+                      selectable && selectedIds.includes(rowId) ? 'bg-violet-50/40 dark:bg-violet-900/10' : ''
+                    }`}
+                  >
+                    {selectable && (
+                      <td className="px-4 py-4 text-center w-10">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(rowId)}
+                          onChange={() => handleToggleRow(rowId)}
+                          className="h-4 w-4 text-violet-650 focus:ring-violet-500 border-slate-300 dark:border-slate-700 rounded cursor-pointer"
+                        />
                       </td>
-                    )
-                  })}
-                </tr>
-              ))
+                    )}
+                    {columns.map((column, colIndex) => {
+                      const cellContent =
+                        typeof column.accessor === 'function'
+                          ? column.accessor(row)
+                          : (row[column.accessor] as React.ReactNode)
+
+                      return (
+                        <td key={colIndex} className="px-6 py-4 text-slate-800 dark:text-slate-200 whitespace-nowrap">
+                          {cellContent}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })
             )}
           </tbody>
         </table>

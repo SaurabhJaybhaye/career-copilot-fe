@@ -14,7 +14,8 @@ import {
   useJobsQuery, 
   useCreateJobMutation, 
   useUpdateJobMutation,
-  useDeleteJobMutation, 
+  useDeleteJobMutation,
+  useDeleteJobsBulkMutation, 
   useMatchResumesMutation, 
   useFetchExternalJobsMutation,
 } from '@/hooks/useJobs'
@@ -26,6 +27,7 @@ export const Jobs: React.FC = () => {
   const createJobMutation = useCreateJobMutation()
   const updateJobMutation = useUpdateJobMutation()
   const deleteJobMutation = useDeleteJobMutation()
+  const deleteJobsBulkMutation = useDeleteJobsBulkMutation()
   const matchResumesMutation = useMatchResumesMutation()
   const fetchExternalJobsMutation = useFetchExternalJobsMutation()
 
@@ -35,6 +37,9 @@ export const Jobs: React.FC = () => {
   // External Scraper state
   const [scrapedJobs, setScrapedJobs] = useState<ScrapedJobItem[]>([])
   const [hasSearchedExternal, setHasSearchedExternal] = useState(false)
+
+  // Bulk selection state
+  const [selectedJobIds, setSelectedJobIds] = useState<string[]>([])
 
   // State controls for manual intake
   const [isAddOpen, setIsAddOpen] = useState(false)
@@ -213,6 +218,21 @@ export const Jobs: React.FC = () => {
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to delete job.')
+    }
+  }
+
+  const handleBulkDeleteJobs = async (selectedIds: string[], clearSelection: () => void) => {
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected job description(s)?`)) return
+
+    try {
+      const res = await deleteJobsBulkMutation.mutateAsync(selectedIds)
+      toast.success(res.message || `${selectedIds.length} job(s) deleted successfully.`)
+      clearSelection()
+      if (selectedJobId && selectedIds.includes(selectedJobId)) {
+        setSelectedJobId(null)
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete selected jobs.')
     }
   }
 
@@ -553,6 +573,21 @@ export const Jobs: React.FC = () => {
               pageSize={10}
               searchPlaceholder="Search jobs, companies, or dates..."
               searchKeys={['title', 'company', 'location', 'postedAt', 'createdAt']}
+              selectable
+              selectedIds={selectedJobIds}
+              onSelectionChange={setSelectedJobIds}
+              getRowId={(row) => row._id || row.id || ''}
+              renderBulkActions={(selectedIds, clearSelection) => (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  isLoading={deleteJobsBulkMutation.isPending}
+                  onClick={() => handleBulkDeleteJobs(selectedIds, clearSelection)}
+                  className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold"
+                >
+                  <Trash2 className="h-4 w-4" /> Delete Selected ({selectedIds.length})
+                </Button>
+              )}
             />
           )}
         </div>
