@@ -59,7 +59,11 @@ axiosInstance.interceptors.response.use(
     }
     
     // Global error message extraction
-    const errorMessage = error.response?.data?.message || 'An unexpected error occurred'
+    const status = error.response?.status
+    let errorMessage = error.response?.data?.message || 'An unexpected error occurred'
+    if (status === 429) {
+      errorMessage = error.response?.data?.message || 'AI Rate Limit Reached: The Gemini AI service is currently receiving high traffic. Please wait about a minute before trying again.'
+    }
     return Promise.reject(new Error(errorMessage))
   }
 )
