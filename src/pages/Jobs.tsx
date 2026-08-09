@@ -225,8 +225,8 @@ export const Jobs: React.FC = () => {
     if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected job description(s)?`)) return
 
     try {
-      const res = await deleteJobsBulkMutation.mutateAsync(selectedIds)
-      toast.success(res.message || `${selectedIds.length} job(s) deleted successfully.`)
+      await deleteJobsBulkMutation.mutateAsync(selectedIds)
+      toast.success(`${selectedIds.length} job(s) deleted successfully.`)
       clearSelection()
       if (selectedJobId && selectedIds.includes(selectedJobId)) {
         setSelectedJobId(null)

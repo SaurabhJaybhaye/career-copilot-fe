@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Briefcase, MapPin, DollarSign, ExternalLink, Sparkles, ChevronDown, ChevronUp, Zap, FileText, AlertCircle, Calendar, Clock } from 'lucide-react'
+import { Briefcase, MapPin, DollarSign, ExternalLink, Sparkles, ChevronDown, ChevronUp, Zap, FileText, AlertCircle, Calendar } from 'lucide-react'
 import { Button } from './Button'
 import type { ScrapedJobItem } from '@/hooks/useJobs'
 

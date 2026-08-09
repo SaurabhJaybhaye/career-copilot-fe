@@ -312,8 +312,8 @@ export const ResumeBuilder: React.FC = () => {
     if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected resume(s)?`)) return
 
     try {
-      const res = await deleteResumesBulkMutation.mutateAsync(selectedIds)
-      toast.success(res.message || `${selectedIds.length} resume(s) deleted successfully.`)
+      await deleteResumesBulkMutation.mutateAsync(selectedIds)
+      toast.success(`${selectedIds.length} resume(s) deleted successfully.`)
       clearSelection()
       if (selectedResumeId && selectedIds.includes(selectedResumeId)) {
         setSelectedResumeId(null)
