@@ -18,6 +18,8 @@ export interface Job {
   isEasyApply?: boolean
   insights?: string[]
   skills?: string[]
+  technologies?: string[]
+  domains?: string[]
   postedAt?: string
   createdAt: string
   updatedAt: string
@@ -243,6 +245,23 @@ export const useFetchExternalJobsMutation = () => {
         { timeout: 200000 }
       )
       return response.data?.jobs || []
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
+
+export const useExtractJobKeywordsMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (jobId: string) => {
+      const response = await api.post<{ success: boolean; data: { job: Job } }>(
+        `/jobs/${jobId}/extract-keywords`
+      )
+      return response.data?.job
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] })

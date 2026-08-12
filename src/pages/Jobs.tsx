@@ -18,6 +18,7 @@ import {
   useDeleteJobsBulkMutation, 
   useMatchResumesMutation, 
   useFetchExternalJobsMutation,
+  useExtractJobKeywordsMutation,
 } from '@/hooks/useJobs'
 import type { Job, MatchResult, ScrapedJobItem, FetchExternalJobsPayload } from '@/hooks/useJobs'
 
@@ -30,6 +31,7 @@ export const Jobs: React.FC = () => {
   const deleteJobsBulkMutation = useDeleteJobsBulkMutation()
   const matchResumesMutation = useMatchResumesMutation()
   const fetchExternalJobsMutation = useFetchExternalJobsMutation()
+  const extractKeywordsMutation = useExtractJobKeywordsMutation()
 
   // Tab State: 'scraper' | 'tracked'
   const [activeTab, setActiveTab] = useState<'scraper' | 'tracked'>('scraper')
@@ -56,10 +58,10 @@ export const Jobs: React.FC = () => {
   const [status, setStatus] = useState<'active' | 'archived' | 'draft'>('active')
   const [description, setDescription] = useState('')
 
-  // Diagnostics modal state
   const [matches, setMatches] = useState<MatchResult[]>([])
   const [selectedMatch, setSelectedMatch] = useState<MatchResult | null>(null)
   const [isMatchingLoading, setIsMatchingLoading] = useState(false)
+  const [inspectorTab, setInspectorTab] = useState<'jd' | 'diagnostics'>('jd')
 
   // Find active job details from either tracked jobs or scraped jobs list
   const activeJob = jobs.find(j => (j._id || j.id) === selectedJobId) || 
@@ -108,6 +110,15 @@ export const Jobs: React.FC = () => {
 
   const handleMatchResumes = (jobId: string) => {
     setSelectedJobId(jobId)
+  }
+
+  const handleExtractKeywords = async (jobId: string) => {
+    try {
+      await extractKeywordsMutation.mutateAsync(jobId)
+      toast.success('Tech stack and skills extracted successfully!')
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to extract keywords.')
+    }
   }
 
   const handleAddSubmit = async (e: React.FormEvent) => {
@@ -731,151 +742,278 @@ export const Jobs: React.FC = () => {
         </form>
       </Modal>
 
-      {/* Match Diagnostics Inspector Modal */}
       <Modal
         isOpen={!!selectedJobId}
         onClose={() => setSelectedJobId(null)}
-        title={activeJob ? `Match Diagnostics: ${activeJob.title} (${activeJob.company})` : 'Calculating Match Metrics...'}
+        title={activeJob ? `${activeJob.title} — ${activeJob.company}` : 'Job Details Inspector'}
         variant="default"
       >
-        {isMatchingLoading ? (
-          <div className="py-16 flex flex-col items-center justify-center space-y-3">
-            <span className="animate-spin h-8 w-8 text-violet-650 rounded-full border-2 border-violet-100 border-t-violet-650" />
-            <p className="text-xs text-slate-500 font-semibold">Running Match Heuristics...</p>
-          </div>
-        ) : activeJob && matches.length === 0 ? (
-          <div className="py-8 text-center space-y-3">
-            <AlertCircle className="h-8 w-8 text-slate-400 mx-auto" />
-            <p className="text-sm text-slate-500 font-semibold">No resumes registered to test compatibility.</p>
-            <p className="text-xs text-slate-400">Please upload a resume in Resume Manager first.</p>
-            <Button onClick={() => setSelectedJobId(null)} variant="default">
-              Close Diagnostics
-            </Button>
-          </div>
-        ) : activeJob && selectedMatch ? (
-          <div className="space-y-6 text-left">
-            {/* Top overview summary */}
-            {activeJob.url && (
-              <div className="pb-3 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                <span className="text-xs text-slate-500">Requirements parsed successfully</span>
-                <a
-                  href={activeJob.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center text-xs font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400"
-                >
-                  <ExternalLink className="mr-1 h-3.5 w-3.5" /> View Posting
-                </a>
+        {activeJob && (
+          <div className="space-y-4">
+            {/* Modal Tab Switcher */}
+            <div className="flex border-b border-slate-200 dark:border-slate-700 gap-4 text-left">
+              <button
+                type="button"
+                onClick={() => setInspectorTab('jd')}
+                className={`pb-2.5 text-xs font-bold flex items-center gap-1.5 border-b-2 transition cursor-pointer ${
+                  inspectorTab === 'jd'
+                    ? 'border-violet-650 text-violet-650 dark:text-violet-400'
+                    : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                }`}
+              >
+                <FileText className="h-3.5 w-3.5" /> Full Job Description (JD)
+              </button>
+              <button
+                type="button"
+                onClick={() => setInspectorTab('diagnostics')}
+                className={`pb-2.5 text-xs font-bold flex items-center gap-1.5 border-b-2 transition cursor-pointer ${
+                  inspectorTab === 'diagnostics'
+                    ? 'border-violet-650 text-violet-650 dark:text-violet-400'
+                    : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                }`}
+              >
+                <Sparkles className="h-3.5 w-3.5" /> Match Diagnostics ({matches.length})
+              </button>
+            </div>
+
+            {/* Tab 1: Full Job Description (JD) */}
+            {inspectorTab === 'jd' && (
+              <div className="space-y-4 text-left pt-2">
+                {/* Meta details */}
+                <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs">
+                  <div className="flex flex-wrap items-center gap-3 text-slate-600 dark:text-slate-300 font-medium">
+                    <span>📍 <strong>Location:</strong> {activeJob.location || 'Remote'}</span>
+                    {activeJob.salary && <span>💰 <strong>Salary:</strong> {activeJob.salary}</span>}
+                    <span>Status: <Badge variant={activeJob.status === 'active' ? 'offer' : 'applied'}>{activeJob.status}</Badge></span>
+                  </div>
+                  {activeJob.url && (
+                    <a
+                      href={activeJob.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center font-bold text-violet-650 hover:underline dark:text-violet-400"
+                    >
+                      <ExternalLink className="mr-1 h-3.5 w-3.5" /> View Posting
+                    </a>
+                  )}
+                </div>
+
+                {/* Extracted Tech Stack / Skills Badges */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <h5 className="text-xxs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      Extracted Tech Stack & Skills
+                    </h5>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      isLoading={extractKeywordsMutation.isPending}
+                      onClick={() => handleExtractKeywords(activeJob._id || activeJob.id || '')}
+                      className="!py-1 !px-2.5 text-xxs font-bold flex items-center gap-1 border-violet-200 dark:border-violet-800 text-violet-650 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/30"
+                    >
+                      <Sparkles className="h-3 w-3 text-amber-500 fill-amber-500" />
+                      {((activeJob.skills?.length || 0) > 0 || (activeJob.technologies?.length || 0) > 0) ? 'Re-extract Keywords' : 'Extract Keywords'}
+                    </Button>
+                  </div>
+
+                  {((activeJob.skills && activeJob.skills.length > 0) || (activeJob.technologies && activeJob.technologies.length > 0)) ? (
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {activeJob.skills?.map((skill, idx) => (
+                        <Badge key={`skill-${idx}`} variant="offer" className="!text-[10px] !py-0.5 !px-2">
+                          {skill}
+                        </Badge>
+                      ))}
+                      {activeJob.technologies?.map((tech, idx) => (
+                        <Badge key={`tech-${idx}`} variant="applied" className="!text-[10px] !py-0.5 !px-2">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                      <span>No extracted keywords yet for this job.</span>
+                      <span className="font-semibold text-violet-650 dark:text-violet-400">Click &quot;Extract Keywords&quot; to analyze</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Full Description Box */}
+                <div className="space-y-1.5">
+                  <h5 className="text-xxs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Full Job Description
+                  </h5>
+                  <div className="max-h-96 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200/80 dark:border-slate-800 text-xs leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap font-sans">
+                    {activeJob.description || 'No description text provided.'}
+                  </div>
+                </div>
+
+                {/* Quick actions */}
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setInspectorTab('diagnostics')}
+                    className="text-xs"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 mr-1" /> View Resume Compatibility
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => navigate(`/copilot?jobId=${selectedJobId}`)}
+                    className="flex items-center gap-1.5 text-xs"
+                  >
+                    <Sparkles className="h-4 w-4" /> Open in AI Copilot
+                  </Button>
+                </div>
               </div>
             )}
 
-            {/* Resume Selection Cards Grid */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Select Tested Resume
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {matches.map((item) => {
-                  const isSelected = selectedMatch.resumeId === item.resumeId
-                  const isRecommended = item.score >= 80
+            {/* Tab 2: Match Diagnostics */}
+            {inspectorTab === 'diagnostics' && (
+              <div className="pt-2">
+                {isMatchingLoading ? (
+                  <div className="py-16 flex flex-col items-center justify-center space-y-3">
+                    <span className="animate-spin h-8 w-8 text-violet-650 rounded-full border-2 border-violet-100 border-t-violet-650" />
+                    <p className="text-xs text-slate-500 font-semibold">Running Match Heuristics...</p>
+                  </div>
+                ) : matches.length === 0 ? (
+                  <div className="py-8 text-center space-y-3">
+                    <AlertCircle className="h-8 w-8 text-slate-400 mx-auto" />
+                    <p className="text-sm text-slate-500 font-semibold">No resumes registered to test compatibility.</p>
+                    <p className="text-xs text-slate-400">Please upload a resume in Resume Manager first.</p>
+                    <Button onClick={() => setSelectedJobId(null)} variant="default">
+                      Close Diagnostics
+                    </Button>
+                  </div>
+                ) : selectedMatch ? (
+                  <div className="space-y-6 text-left">
+                    {/* Top overview summary */}
+                    {activeJob.url && (
+                      <div className="pb-3 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                        <span className="text-xs text-slate-500">Requirements parsed successfully</span>
+                        <a
+                          href={activeJob.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center text-xs font-bold text-violet-650 hover:text-violet-500 hover:underline dark:text-violet-400"
+                        >
+                          <ExternalLink className="mr-1 h-3.5 w-3.5" /> View Posting
+                        </a>
+                      </div>
+                    )}
 
-                  return (
-                    <button
-                      key={item.resumeId}
-                      onClick={() => setSelectedMatch(item)}
-                      className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition cursor-pointer select-none ${
-                        isSelected 
-                          ? 'border-violet-500 bg-violet-50/20 dark:bg-violet-950/20 ring-1 ring-violet-500' 
-                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-700/30'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
-                          {item.resumeTitle}
+                    {/* Resume Selection Cards Grid */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                        Select Tested Resume
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {matches.map((item) => {
+                          const isSelected = selectedMatch.resumeId === item.resumeId
+                          const isRecommended = item.score >= 80
+
+                          return (
+                            <button
+                              key={item.resumeId}
+                              onClick={() => setSelectedMatch(item)}
+                              className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition cursor-pointer select-none ${
+                                isSelected 
+                                  ? 'border-violet-500 bg-violet-50/20 dark:bg-violet-950/20 ring-1 ring-violet-500' 
+                                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-700/30'
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <span className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
+                                  {item.resumeTitle}
+                                </span>
+                                <Badge variant={isRecommended ? 'offer' : 'applied'} className="!py-0.5 !px-1.5 text-xxs flex-shrink-0">
+                                  {item.score}%
+                                </Badge>
+                              </div>
+
+                              <div className="mt-2.5 flex items-center justify-between">
+                                <span className="text-[10px] text-slate-400 dark:text-slate-400 font-semibold">
+                                  Recommendation:
+                                </span>
+                                <span className={`text-[10px] font-extrabold ${isRecommended ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`}>
+                                  {item.recommendationStatus === 'RECOMMENDED' ? 'Recommended' : 'Review Fit'}
+                                </span>
+                              </div>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Keyword Match Diagnostics Details */}
+                    <div className="bg-slate-50 dark:bg-slate-900/40 p-4.5 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center">
+                          <FileText className="mr-1.5 h-4.5 w-4.5 text-violet-650 opacity-85" />
+                          Score Diagnostics: {selectedMatch.resumeTitle}
                         </span>
-                        <Badge variant={isRecommended ? 'offer' : 'applied'} className="!py-0.5 !px-1.5 text-xxs flex-shrink-0">
-                          {item.score}%
+                        <Badge variant={selectedMatch.score >= 80 ? 'offer' : 'applied'}>
+                          {selectedMatch.score}% Match Rate
                         </Badge>
                       </div>
 
-                      <div className="mt-2.5 flex items-center justify-between">
-                        <span className="text-[10px] text-slate-400 dark:text-slate-400 font-semibold">
-                          Recommendation:
-                        </span>
-                        <span className={`text-[10px] font-extrabold ${isRecommended ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`}>
-                          {item.recommendationStatus === 'RECOMMENDED' ? 'Recommended' : 'Review Fit'}
-                        </span>
+                      {/* Matched Skills */}
+                      <div className="space-y-1.5">
+                        <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
+                          <Check className="mr-1 h-3.5 w-3.5 text-emerald-500" /> Matched Skills ({selectedMatch.matchedSkills.length})
+                        </h5>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedMatch.matchedSkills.length > 0 ? (
+                            selectedMatch.matchedSkills.map((skill, idx) => (
+                              <Badge key={idx} variant="offer" className="!text-[10px] !py-0.5 !px-2">
+                                {skill}
+                              </Badge>
+                            ))
+                          ) : (
+                            <span className="text-xs text-slate-400 italic">No skills matched.</span>
+                          )}
+                        </div>
                       </div>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
 
-            {/* Keyword Match Diagnostics Details */}
-            <div className="bg-slate-50 dark:bg-slate-900/40 p-4.5 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center">
-                  <FileText className="mr-1.5 h-4.5 w-4.5 text-violet-650 opacity-85" />
-                  Score Diagnostics: {selectedMatch.resumeTitle}
-                </span>
-                <Badge variant={selectedMatch.score >= 80 ? 'offer' : 'applied'}>
-                  {selectedMatch.score}% Match Rate
-                </Badge>
-              </div>
+                      {/* Missing Skills */}
+                      <div className="space-y-1.5">
+                        <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
+                          <AlertCircle className="mr-1 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" /> Missing Skills ({selectedMatch.missingSkills.length})
+                        </h5>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedMatch.missingSkills.length > 0 ? (
+                            selectedMatch.missingSkills.map((skill, idx) => (
+                              <Badge key={idx} variant="interview" className="!text-[10px] !py-0.5 !px-2 bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border-none">
+                                {skill}
+                              </Badge>
+                            ))
+                          ) : (
+                            <span className="text-xs text-slate-400 italic">No missing skills detected! Perfect match.</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Matched Skills */}
-              <div className="space-y-1.5">
-                <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
-                  <Check className="mr-1 h-3.5 w-3.5 text-emerald-500" /> Matched Skills ({selectedMatch.matchedSkills.length})
-                </h5>
-                <div className="flex flex-wrap gap-1">
-                  {selectedMatch.matchedSkills.length > 0 ? (
-                    selectedMatch.matchedSkills.map((skill, idx) => (
-                      <Badge key={idx} variant="offer" className="!text-[10px] !py-0.5 !px-2">
-                        {skill}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-xs text-slate-400 italic">No skills matched.</span>
-                  )}
-                </div>
+                    {/* AI Action */}
+                    <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          navigate(`/copilot?jobId=${selectedJobId}&resumeId=${selectedMatch.resumeId}`)
+                        }}
+                        className="flex items-center gap-1.5"
+                      >
+                        <Sparkles className="h-4 w-4" /> Open in AI Copilot
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center text-sm py-8">Failed to calculate compatibility diagnostics.</p>
+                )}
               </div>
-
-              {/* Missing Skills */}
-              <div className="space-y-1.5">
-                <h5 className="text-xxs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
-                  <AlertCircle className="mr-1 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" /> Missing Skills ({selectedMatch.missingSkills.length})
-                </h5>
-                <div className="flex flex-wrap gap-1">
-                  {selectedMatch.missingSkills.length > 0 ? (
-                    selectedMatch.missingSkills.map((skill, idx) => (
-                      <Badge key={idx} variant="interview" className="!text-[10px] !py-0.5 !px-2 bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 border-none">
-                        {skill}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-xs text-slate-400 italic">No missing skills detected! Perfect match.</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* AI Action */}
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
-              <Button
-                variant="primary"
-                onClick={() => {
-                  navigate(`/copilot?jobId=${selectedJobId}&resumeId=${selectedMatch.resumeId}`)
-                }}
-                className="flex items-center gap-1.5"
-              >
-                <Sparkles className="h-4 w-4" /> Open in AI Copilot
-              </Button>
-            </div>
+            )}
           </div>
-        ) : (
-          <p className="text-slate-500 text-center text-sm py-8">Failed to calculate compatibility diagnostics.</p>
         )}
       </Modal>
     </div>
