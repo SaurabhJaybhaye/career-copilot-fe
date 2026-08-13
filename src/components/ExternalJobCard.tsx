@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Briefcase, MapPin, DollarSign, ExternalLink, Sparkles, ChevronDown, ChevronUp, Zap, FileText, AlertCircle, Calendar } from 'lucide-react'
 import { Button } from './Button'
 import type { ScrapedJobItem } from '@/hooks/useJobs'
+import { getJobPlatform } from '@/utils/platform'
 
 export interface ExternalJobCardProps {
   job: ScrapedJobItem
@@ -19,8 +20,7 @@ export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
   const [showInsights, setShowInsights] = useState(true)
   const [showFullDescription, setShowFullDescription] = useState(false)
 
-  const isLinkedIn = (job.url && job.url.includes('linkedin.com')) || portal === 'linkedin'
-  const isIndeed = (job.url && job.url.includes('indeed.com')) || portal === 'indeed'
+  const platformInfo = getJobPlatform({ source: job.source || portal, url: job.url })
 
   const rawDate = job.postedAt || job.createdAt
   let formattedDateStr = ''
@@ -60,16 +60,10 @@ export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
             )}
 
             {/* Portal Source Badge */}
-            {isLinkedIn && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50">
-                LinkedIn
-              </span>
-            )}
-            {isIndeed && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50">
-                Indeed
-              </span>
-            )}
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors ${platformInfo.bgClass} ${platformInfo.textClass} ${platformInfo.borderClass}`}>
+              {platformInfo.icon}
+              {platformInfo.name}
+            </span>
           </div>
         </div>
 

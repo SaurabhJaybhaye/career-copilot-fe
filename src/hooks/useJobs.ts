@@ -78,6 +78,7 @@ interface CreateJobPayload {
   url?: string
   salary?: string
   status?: 'active' | 'archived' | 'draft'
+  source?: string
 }
 
 export const useCreateJobMutation = () => {
@@ -111,6 +112,7 @@ interface UpdateJobPayload {
   url?: string
   salary?: string
   status?: 'active' | 'archived' | 'draft'
+  source?: string
 }
 
 export const useUpdateJobMutation = () => {

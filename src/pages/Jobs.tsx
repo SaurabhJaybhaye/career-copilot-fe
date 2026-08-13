@@ -10,6 +10,7 @@ import { Modal } from '@/components/Modal'
 import { DataTable } from '@/components/DataTable'
 import { ExternalJobSearchFilter } from '@/components/ExternalJobSearchFilter'
 import { ExternalJobCard } from '@/components/ExternalJobCard'
+import { getJobPlatform } from '@/utils/platform'
 import { 
   useJobsQuery, 
   useCreateJobMutation, 
@@ -55,6 +56,7 @@ export const Jobs: React.FC = () => {
   const [location, setLocation] = useState('')
   const [salary, setSalary] = useState('')
   const [url, setUrl] = useState('')
+  const [source, setSource] = useState('manual')
   const [status, setStatus] = useState<'active' | 'archived' | 'draft'>('active')
   const [description, setDescription] = useState('')
 
@@ -135,6 +137,7 @@ export const Jobs: React.FC = () => {
         location: location.trim() || undefined,
         salary: salary.trim() || undefined,
         url: url.trim() || undefined,
+        source: source || undefined,
         status,
         description: description.trim(),
       })
@@ -146,6 +149,7 @@ export const Jobs: React.FC = () => {
       setLocation('')
       setSalary('')
       setUrl('')
+      setSource('manual')
       setStatus('active')
       setDescription('')
     } catch (err: any) {
@@ -160,6 +164,7 @@ export const Jobs: React.FC = () => {
     setLocation('')
     setSalary('')
     setUrl('')
+    setSource('manual')
     setStatus('active')
     setDescription('')
   }
@@ -172,6 +177,7 @@ export const Jobs: React.FC = () => {
     setLocation('')
     setSalary('')
     setUrl('')
+    setSource('manual')
     setStatus('active')
     setDescription('')
   }
@@ -185,6 +191,7 @@ export const Jobs: React.FC = () => {
       setLocation(jobToEdit.location || '')
       setSalary(jobToEdit.salary || '')
       setUrl(jobToEdit.url || '')
+      setSource(jobToEdit.source || 'manual')
       setStatus(jobToEdit.status)
       setDescription(jobToEdit.description)
       setIsEditOpen(true)
@@ -208,6 +215,7 @@ export const Jobs: React.FC = () => {
         location: location.trim() || undefined,
         salary: salary.trim() || undefined,
         url: url.trim() || undefined,
+        source: source || undefined,
         status,
         description: description.trim(),
       })
@@ -262,6 +270,36 @@ export const Jobs: React.FC = () => {
       ),
       sortable: true,
       sortKey: 'title' as keyof Job
+    },
+    {
+      header: 'Platform',
+      accessor: (row: Job) => {
+        const platformInfo = getJobPlatform(row)
+        return (
+          <div className="flex items-center text-left">
+            <span
+              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border transition-colors ${platformInfo.bgClass} ${platformInfo.textClass} ${platformInfo.borderClass}`}
+              title={row.url ? `Posting URL: ${row.url}` : `Source: ${platformInfo.name}`}
+            >
+              {platformInfo.icon}
+              {platformInfo.name}
+            </span>
+            {row.url && (
+              <a
+                href={row.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1.5 text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors p-1"
+                title="Open original job posting"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            )}
+          </div>
+        )
+      },
+      sortable: true,
+      sortKey: 'source' as keyof Job
     },
     {
       header: 'Location',
@@ -582,8 +620,8 @@ export const Jobs: React.FC = () => {
               columns={columns}
               data={jobs}
               pageSize={10}
-              searchPlaceholder="Search jobs, companies, or dates..."
-              searchKeys={['title', 'company', 'location', 'postedAt', 'createdAt']}
+              searchPlaceholder="Search jobs, companies, platforms (LinkedIn, Indeed...), or dates..."
+              searchKeys={['title', 'company', 'location', 'source', 'url', 'postedAt', 'createdAt']}
               selectable
               selectedIds={selectedJobIds}
               onSelectionChange={setSelectedJobIds}
@@ -655,12 +693,29 @@ export const Jobs: React.FC = () => {
             />
           </div>
 
-          <Input
-            label="Job Posting URL"
-            placeholder="e.g. https://linkedin.com/jobs/view/..."
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Job Posting URL"
+              placeholder="e.g. https://linkedin.com/jobs/view/..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+            <Select
+              label="Platform Source"
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              options={[
+                { value: 'manual', label: 'Auto-detect from URL / Direct' },
+                { value: 'linkedin', label: 'LinkedIn' },
+                { value: 'indeed', label: 'Indeed' },
+                { value: 'naukri', label: 'Naukri' },
+                { value: 'glassdoor', label: 'Glassdoor' },
+                { value: 'wellfound', label: 'Wellfound' },
+                { value: 'monster', label: 'Monster' },
+                { value: 'ziprecruiter', label: 'ZipRecruiter' },
+              ]}
+            />
+          </div>
 
           <TextArea
             label="Job Description Details"
@@ -724,12 +779,29 @@ export const Jobs: React.FC = () => {
             />
           </div>
 
-          <Input
-            label="Job Posting URL"
-            placeholder="e.g. https://linkedin.com/jobs/view/..."
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Job Posting URL"
+              placeholder="e.g. https://linkedin.com/jobs/view/..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+            <Select
+              label="Platform Source"
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              options={[
+                { value: 'manual', label: 'Auto-detect from URL / Direct' },
+                { value: 'linkedin', label: 'LinkedIn' },
+                { value: 'indeed', label: 'Indeed' },
+                { value: 'naukri', label: 'Naukri' },
+                { value: 'glassdoor', label: 'Glassdoor' },
+                { value: 'wellfound', label: 'Wellfound' },
+                { value: 'monster', label: 'Monster' },
+                { value: 'ziprecruiter', label: 'ZipRecruiter' },
+              ]}
+            />
+          </div>
 
           <TextArea
             label="Job Description Details"
