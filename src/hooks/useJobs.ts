@@ -217,6 +217,7 @@ export interface ScrapedJobItem {
   description: string
   url: string
   salary: string
+  source?: string
   isEasyApply: boolean
   insights: string[]
   skills: string[]
