@@ -32,6 +32,7 @@ export const API_ENDPOINTS = {
   APPLICATIONS: {
     LIST: '/applications',
     CREATE: '/applications',
+    BULK_APPLY: '/applications/bulk-apply',
     UPDATE_STATUS: (id: string) => `/applications/${id}/status`,
     DELETE: (id: string) => `/applications/${id}`,
   },

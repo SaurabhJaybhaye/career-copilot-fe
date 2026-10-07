@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit, Sparkles, Globe, Search, Layers, Calendar, Clock } from 'lucide-react'
+import { Briefcase, Plus, Trash2, Eye, AlertCircle, FileText, Check, ExternalLink, Edit, Sparkles, Globe, Search, Layers, Calendar, Clock, Zap } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { Input, TextArea } from '@/components/Input'
 import { Select } from '@/components/Select'
@@ -22,6 +22,7 @@ import {
   useExtractJobKeywordsMutation,
 } from '@/hooks/useJobs'
 import type { Job, MatchResult, ScrapedJobItem, FetchExternalJobsPayload } from '@/hooks/useJobs'
+import { useBulkApplyMutation } from '@/hooks/useApplications'
 
 export const Jobs: React.FC = () => {
   const navigate = useNavigate()
@@ -33,6 +34,8 @@ export const Jobs: React.FC = () => {
   const matchResumesMutation = useMatchResumesMutation()
   const fetchExternalJobsMutation = useFetchExternalJobsMutation()
   const extractKeywordsMutation = useExtractJobKeywordsMutation()
+  const bulkApplyMutation = useBulkApplyMutation()
+  const [applyingJobId, setApplyingJobId] = useState<string | null>(null)
 
   // Tab State: 'scraper' | 'tracked'
   const [activeTab, setActiveTab] = useState<'scraper' | 'tracked'>('scraper')
@@ -40,6 +43,7 @@ export const Jobs: React.FC = () => {
   // External Scraper state
   const [scrapedJobs, setScrapedJobs] = useState<ScrapedJobItem[]>([])
   const [hasSearchedExternal, setHasSearchedExternal] = useState(false)
+  const [selectedScrapedJobIds, setSelectedScrapedJobIds] = useState<string[]>([])
 
   // Bulk selection state
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([])
@@ -255,6 +259,89 @@ export const Jobs: React.FC = () => {
     }
   }
 
+  const handleBulkApply = async (jobIdsToApply: string[], clearSelection?: () => void) => {
+    if (jobIdsToApply.length === 0) return
+
+    try {
+      const result = await bulkApplyMutation.mutateAsync({
+        jobIds: jobIdsToApply,
+        note: 'Applied via Bulk 1-Click Auto-Apply (Default Resume)',
+      })
+
+      toast.success(
+        (t) => (
+          <div className="flex items-center gap-2">
+            <span>Successfully applied to {result.appliedCount} job(s) with default resume!</span>
+            <button
+              onClick={() => {
+                toast.dismiss(t.id)
+                navigate('/applications')
+              }}
+              className="px-2 py-0.5 text-xs font-extrabold bg-violet-600 text-white rounded-md hover:bg-violet-700 ml-1 transition"
+            >
+              View Kanban
+            </button>
+          </div>
+        ),
+        { duration: 5000 }
+      )
+
+      if (clearSelection) {
+        clearSelection()
+      }
+      setSelectedJobIds([])
+      setSelectedScrapedJobIds([])
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to submit bulk applications.')
+    }
+  }
+
+  const handleDirectApplySingle = async (jobId: string) => {
+    setApplyingJobId(jobId)
+    try {
+      await bulkApplyMutation.mutateAsync({
+        jobIds: [jobId],
+        note: 'Applied via 1-Click Auto-Apply (Default Resume)',
+      })
+
+      toast.success(
+        (t) => (
+          <div className="flex items-center gap-2">
+            <span>Successfully applied with your default resume!</span>
+            <button
+              onClick={() => {
+                toast.dismiss(t.id)
+                navigate('/applications')
+              }}
+              className="px-2 py-0.5 text-xs font-extrabold bg-violet-600 text-white rounded-md hover:bg-violet-700 ml-1 transition"
+            >
+              View Kanban
+            </button>
+          </div>
+        ),
+        { duration: 5000 }
+      )
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to apply.')
+    } finally {
+      setApplyingJobId(null)
+    }
+  }
+
+  const handleToggleSelectScraped = (jobId: string) => {
+    setSelectedScrapedJobIds((prev) =>
+      prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]
+    )
+  }
+
+  const handleSelectAllScraped = () => {
+    if (selectedScrapedJobIds.length === scrapedJobs.length) {
+      setSelectedScrapedJobIds([])
+    } else {
+      setSelectedScrapedJobIds(scrapedJobs.map((j) => j._id))
+    }
+  }
+
   // DataTable columns for tracked jobs
   const columns = [
     {
@@ -383,38 +470,53 @@ export const Jobs: React.FC = () => {
     },
     {
       header: 'Actions',
-      accessor: (row: Job) => (
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setSelectedJobId(row._id || row.id || null)}
-            className="!py-1.5 !px-3 text-xs flex items-center gap-1"
-            title="Inspect matches"
-          >
-            <Eye className="h-3.5 w-3.5" /> Match Diagnostics
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => handleEditClick(row._id || row.id || '')}
-            className="p-1.5 min-h-0"
-            title="Edit job details"
-          >
-            <Edit className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => handleDelete(row._id || row.id || '')}
-            disabled={deleteJobMutation.isPending}
-            className="p-1.5 min-h-0"
-            title="Delete job description"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      )
+      accessor: (row: Job) => {
+        const jobId = row._id || row.id || ''
+        const isApplyingThis = bulkApplyMutation.isPending && applyingJobId === jobId
+
+        return (
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => handleDirectApplySingle(jobId)}
+              isLoading={isApplyingThis}
+              className="!py-1.5 !px-2.5 text-xs font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-200 dark:bg-violet-950/40 dark:text-violet-300 dark:border-violet-800 flex items-center gap-1 shadow-xs"
+              title="Auto-apply with default resume"
+            >
+              <Zap className="h-3.5 w-3.5 fill-violet-600 text-violet-600" /> Apply
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setSelectedJobId(jobId || null)}
+              className="!py-1.5 !px-3 text-xs flex items-center gap-1"
+              title="Inspect matches"
+            >
+              <Eye className="h-3.5 w-3.5" /> Match Diagnostics
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handleEditClick(jobId)}
+              className="p-1.5 min-h-0"
+              title="Edit job details"
+            >
+              <Edit className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => handleDelete(jobId)}
+              disabled={deleteJobMutation.isPending}
+              className="p-1.5 min-h-0"
+              title="Delete job description"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )
+      }
     }
   ]
 
@@ -549,10 +651,35 @@ export const Jobs: React.FC = () => {
           {/* Results Grid */}
           {!fetchExternalJobsMutation.isPending && hasSearchedExternal && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between text-left">
+              <div className="flex items-center justify-between text-left flex-wrap gap-2">
                 <h3 className="text-sm font-extrabold text-slate-700 dark:text-slate-300">
                   Scraped Job Postings ({scrapedJobs.length})
                 </h3>
+
+                {scrapedJobs.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleSelectAllScraped}
+                      className="!py-1.5 !px-3 text-xs font-semibold"
+                    >
+                      {selectedScrapedJobIds.length === scrapedJobs.length ? 'Deselect All' : `Select All (${scrapedJobs.length})`}
+                    </Button>
+
+                    {selectedScrapedJobIds.length > 0 && (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        isLoading={bulkApplyMutation.isPending}
+                        onClick={() => handleBulkApply(selectedScrapedJobIds)}
+                        className="!py-1.5 !px-3.5 text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-sm flex items-center gap-1.5"
+                      >
+                        <Zap className="h-3.5 w-3.5 fill-white" /> Direct Apply Selected ({selectedScrapedJobIds.length})
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
 
               {scrapedJobs.length === 0 ? (
@@ -569,6 +696,10 @@ export const Jobs: React.FC = () => {
                     <ExternalJobCard
                       key={job._id}
                       job={job}
+                      selected={selectedScrapedJobIds.includes(job._id)}
+                      onToggleSelect={handleToggleSelectScraped}
+                      onDirectApply={handleDirectApplySingle}
+                      isApplying={bulkApplyMutation.isPending && applyingJobId === job._id}
                       onMatchResumes={handleMatchResumes}
                       onTailorResume={handleTailorResume}
                     />
@@ -627,15 +758,26 @@ export const Jobs: React.FC = () => {
               onSelectionChange={setSelectedJobIds}
               getRowId={(row) => row._id || row.id || ''}
               renderBulkActions={(selectedIds, clearSelection) => (
-                <Button
-                  variant="danger"
-                  size="sm"
-                  isLoading={deleteJobsBulkMutation.isPending}
-                  onClick={() => handleBulkDeleteJobs(selectedIds, clearSelection)}
-                  className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold"
-                >
-                  <Trash2 className="h-4 w-4" /> Delete Selected ({selectedIds.length})
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    isLoading={bulkApplyMutation.isPending}
+                    onClick={() => handleBulkApply(selectedIds, clearSelection)}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-sm"
+                  >
+                    <Zap className="h-4 w-4 fill-white" /> Direct Apply ({selectedIds.length})
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    isLoading={deleteJobsBulkMutation.isPending}
+                    onClick={() => handleBulkDeleteJobs(selectedIds, clearSelection)}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold"
+                  >
+                    <Trash2 className="h-4 w-4" /> Delete Selected ({selectedIds.length})
+                  </Button>
+                </div>
               )}
             />
           )}
@@ -1088,6 +1230,46 @@ export const Jobs: React.FC = () => {
           </div>
         )}
       </Modal>
+
+      {/* Floating Sticky Bulk Apply Bar */}
+      {(selectedJobIds.length > 0 || selectedScrapedJobIds.length > 0) && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-md text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-slate-700/80 flex items-center gap-4 transition-all duration-300 animate-in fade-in slide-in-from-bottom-5">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2.5 w-2.5 rounded-full bg-violet-400 animate-pulse" />
+            <span className="text-xs font-bold text-slate-200">
+              {activeTab === 'scraper' ? selectedScrapedJobIds.length : selectedJobIds.length} job(s) selected
+            </span>
+          </div>
+
+          <div className="h-4 w-px bg-slate-700" />
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              isLoading={bulkApplyMutation.isPending}
+              onClick={() => {
+                const ids = activeTab === 'scraper' ? selectedScrapedJobIds : selectedJobIds
+                handleBulkApply(ids)
+              }}
+              className="!py-1.5 !px-3.5 text-xs font-extrabold bg-violet-600 hover:bg-violet-500 shadow-md flex items-center gap-1.5"
+            >
+              <Zap className="h-3.5 w-3.5 fill-white" /> Direct Apply (Default Resume)
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (activeTab === 'scraper') setSelectedScrapedJobIds([])
+                else setSelectedJobIds([])
+              }}
+              className="text-xs font-semibold text-slate-400 hover:text-white px-2 py-1 transition cursor-pointer"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

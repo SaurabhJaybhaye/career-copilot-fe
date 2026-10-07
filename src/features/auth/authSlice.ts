@@ -6,6 +6,20 @@ interface UserPreferences {
   notificationsEnabled: boolean
 }
 
+export interface AutoApplyProfile {
+  linkedinCookie?: string
+  phone?: string
+  location?: string
+  linkedinUrl?: string
+  githubUrl?: string
+  portfolioUrl?: string
+  workAuthorization?: string
+  yearsOfExperience?: number
+  expectedSalary?: string
+  noticePeriod?: string
+  browserHeadless?: boolean
+}
+
 export interface User {
   id: string
   email: string
@@ -13,6 +27,7 @@ export interface User {
   lastName: string
   role: string
   preferences: UserPreferences
+  autoApplyProfile?: AutoApplyProfile
   createdAt: string
   updatedAt: string
 }

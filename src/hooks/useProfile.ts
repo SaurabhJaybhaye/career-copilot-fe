@@ -36,6 +36,19 @@ interface UpdateProfilePayload {
   preferences?: {
     notificationsEnabled?: boolean
   }
+  autoApplyProfile?: {
+    linkedinCookie?: string
+    phone?: string
+    location?: string
+    linkedinUrl?: string
+    githubUrl?: string
+    portfolioUrl?: string
+    workAuthorization?: string
+    yearsOfExperience?: number
+    expectedSalary?: string
+    noticePeriod?: string
+    browserHeadless?: boolean
+  }
 }
 
 export const useUpdateProfileMutation = () => {

@@ -7,6 +7,10 @@ import { getJobPlatform } from '@/utils/platform'
 export interface ExternalJobCardProps {
   job: ScrapedJobItem
   portal?: 'linkedin' | 'indeed'
+  selected?: boolean
+  onToggleSelect?: (jobId: string) => void
+  onDirectApply?: (jobId: string) => void
+  isApplying?: boolean
   onMatchResumes?: (jobId: string) => void
   onTailorResume?: (jobId: string) => void
 }
@@ -14,6 +18,10 @@ export interface ExternalJobCardProps {
 export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
   job,
   portal = 'linkedin',
+  selected = false,
+  onToggleSelect,
+  onDirectApply,
+  isApplying = false,
   onMatchResumes,
   onTailorResume,
 }) => {
@@ -34,19 +42,36 @@ export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm hover:shadow-md transition duration-200 p-5 text-left flex flex-col justify-between space-y-4">
+    <div
+      className={`bg-white dark:bg-slate-800 rounded-2xl border transition duration-200 p-5 text-left flex flex-col justify-between space-y-4 ${
+        selected
+          ? 'border-violet-500 ring-2 ring-violet-500/40 bg-violet-50/10 dark:bg-violet-950/20 shadow-md'
+          : 'border-slate-200/80 dark:border-slate-700 shadow-sm hover:shadow-md'
+      }`}
+    >
       {/* Top Header & Badges */}
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 transition">
-                {job.title}
-              </h3>
-            </div>
-            <div className="flex items-center text-sm font-semibold text-slate-600 dark:text-slate-300 gap-1.5">
-              <Briefcase className="h-4 w-4 text-violet-650 opacity-80" />
-              <span>{job.company}</span>
+          <div className="flex items-start gap-2.5">
+            {onToggleSelect && (
+              <input
+                type="checkbox"
+                checked={selected}
+                onChange={() => onToggleSelect(job._id)}
+                aria-label={`Select job ${job.title}`}
+                className="mt-1 h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500 cursor-pointer accent-violet-600 flex-shrink-0"
+              />
+            )}
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 transition">
+                  {job.title}
+                </h3>
+              </div>
+              <div className="flex items-center text-sm font-semibold text-slate-600 dark:text-slate-300 gap-1.5">
+                <Briefcase className="h-4 w-4 text-violet-650 opacity-80" />
+                <span>{job.company}</span>
+              </div>
             </div>
           </div>
 
@@ -182,6 +207,20 @@ export const ExternalJobCard: React.FC<ExternalJobCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Direct Apply Button */}
+          {onDirectApply && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => onDirectApply(job._id)}
+              isLoading={isApplying}
+              className="!py-1.5 !px-3 text-xs font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-200 dark:bg-violet-950/40 dark:text-violet-300 dark:border-violet-800 flex items-center gap-1 shadow-sm"
+              title="Direct auto-apply using default resume"
+            >
+              <Zap className="h-3.5 w-3.5 fill-violet-600 text-violet-600" /> Apply (Default Resume)
+            </Button>
+          )}
+
           {/* Match Resumes Button */}
           {onMatchResumes && (
             <Button

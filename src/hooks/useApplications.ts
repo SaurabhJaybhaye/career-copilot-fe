@@ -116,3 +116,37 @@ export const useDeleteApplicationMutation = () => {
     },
   })
 }
+
+export interface BulkApplyPayload {
+  jobIds: string[]
+  resumeId?: string | null
+  note?: string | null
+}
+
+export interface BulkApplyResponse {
+  appliedCount: number
+  totalRequested: number
+  applications: Application[]
+}
+
+export const useBulkApplyMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (payload: BulkApplyPayload) => {
+      const response = await api.post<{
+        success: boolean
+        message: string
+        data: BulkApplyResponse
+      }>(API_ENDPOINTS.APPLICATIONS.BULK_APPLY, payload)
+
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
+
